@@ -13,17 +13,20 @@ npm install @vantagecompute/docusaurus-theme
 Add the theme to your `docusaurus.config.js`:
 
 ```js
+const { staticDir, rehypeTabsTransform } = require('@vantagecompute/docusaurus-theme');
+
 const config = {
   // Add the Vantage theme
   themes: ['@vantagecompute/docusaurus-theme'],
+
+  // Serve shared static assets (fonts, icons, logo)
+  staticDirectories: ['static', staticDir],
 
   presets: [
     ['classic', {
       docs: {
         // Optional: use the shared rehype plugin for lowercase <tabs>/<tabitem> support
-        rehypePlugins: [
-          require('@vantagecompute/docusaurus-theme').rehypeTabsTransform,
-        ],
+        rehypePlugins: [rehypeTabsTransform],
       },
       // Do NOT set customCss — the theme injects it automatically
     }],

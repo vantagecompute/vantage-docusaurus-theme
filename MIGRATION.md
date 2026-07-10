@@ -11,11 +11,14 @@ npm install @vantagecompute/docusaurus-theme
 ## Step 2: Update `docusaurus.config.js`
 
 ```diff
-+ const { rehypeTabsTransform } = require("@vantagecompute/docusaurus-theme");
++ const { staticDir, rehypeTabsTransform } = require("@vantagecompute/docusaurus-theme");
 
   const config = {
 -     themes: ["@docusaurus/theme-mermaid"],
 +     themes: ["@docusaurus/theme-mermaid", "@vantagecompute/docusaurus-theme"],
+
++     // Serve shared static assets (fonts, icons, logo)
++     staticDirectories: ["static", staticDir],
 
       presets: [
           ["classic", {

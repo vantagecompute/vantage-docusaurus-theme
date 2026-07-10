@@ -16,11 +16,20 @@ export default function themeVantage(): Plugin {
     getClientModules() {
       return [path.resolve(__dirname, '../src/css/custom.css')];
     },
-
-    configureStaticDirs(staticDirs) {
-      return [...staticDirs, path.resolve(__dirname, '../static')];
-    },
   };
 }
+
+/**
+ * Returns the absolute path to this package's static directory.
+ * Add this to your `staticDirectories` in docusaurus.config.js:
+ *
+ * ```js
+ * const { staticDir } = require('@vantagecompute/docusaurus-theme');
+ * module.exports = {
+ *   staticDirectories: ['static', staticDir],
+ * };
+ * ```
+ */
+export const staticDir = path.resolve(__dirname, '../static');
 
 export { default as rehypeTabsTransform } from './utils/rehypeTabsTransform';

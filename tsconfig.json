@@ -1,5 +1,4 @@
 {
-  "extends": "@docusaurus/tsconfig",
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",
@@ -7,6 +6,7 @@
     "declarationMap": true,
     "sourceMap": true,
     "module": "commonjs",
+    "moduleResolution": "node",
     "target": "es2020",
     "esModuleInterop": true,
     "jsx": "react-jsx",

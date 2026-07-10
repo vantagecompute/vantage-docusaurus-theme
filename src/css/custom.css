@@ -1,0 +1,1858 @@
+/**
+ * Vantage Documentation  -  design system
+ *
+ * Implements the Vantage AI Workbench design (iris + ink palette, Inter
+ * display + body, JetBrains Mono code, right-rail TOC, callout/table/step
+ * treatments) on top of Docusaurus' classic theme.
+ */
+
+/* ── Fonts ─────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Italic.woff') format('woff');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-MediumItalic.woff') format('woff');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/fonts/Satoshi-BoldItalic.woff') format('woff');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ── Design tokens ─────────────────────────────────────────────────── */
+:root {
+  /* Ink  -  neutral palette (slate-blue) */
+  --ink-900: #0b1020;
+  --ink-700: #1f2547;
+  --ink-500: #4a5375;
+  --ink-400: #6b7494;
+  --ink-300: #9aa1bd;
+  --ink-200: #c8cce0;
+  --ink-100: #e6e8f2;
+  --ink-50:  #f4f5fb;
+  --paper:   #fbfbfd;
+
+  /* Iris  -  primary accent */
+  --iris-900: #312e81;
+  --iris-700: #4338ca;
+  --iris-600: #5046e5;
+  --iris-500: #6366f1;
+  --iris-200: #c7d2fe;
+  --iris-100: #e0e2fb;
+  --iris-50:  #eef0fe;
+
+  /* Status */
+  --green-700: #15803d;
+  --green-600: #15803d;
+  --green-500: #22c55e;
+  --green-50:  #f0fdf4;
+  --amber-600: #b45309;
+  --amber-500: #f59e0b;
+  --amber-50:  #fffbeb;
+  --rose-600:  #be123c;
+  --rose-500:  #f43f5e;
+  --rose-50:   #fff1f2;
+  --violet-600: #7c3aed;
+  --violet-50:  #faf5ff;
+
+  /* Shadows */
+  --shadow-card: 0 1px 0 rgba(15, 23, 42, 0.04), 0 1px 3px -1px rgba(15, 23, 42, 0.06);
+  --shadow-pop:  0 8px 24px -8px rgba(15, 23, 42, 0.18), 0 2px 6px -2px rgba(15, 23, 42, 0.08);
+
+  /* Legacy brand vars kept for backwards compat */
+  --vantage-purple: var(--iris-700);
+  --vantage-purple-dark: var(--iris-900);
+  --vantage-button: var(--iris-500);
+
+  /* Infima  -  primary mapped to iris */
+  --ifm-color-primary: #5046e5;
+  --ifm-color-primary-dark: #4338ca;
+  --ifm-color-primary-darker: #3f33c0;
+  --ifm-color-primary-darkest: #312e81;
+  --ifm-color-primary-light: #6366f1;
+  --ifm-color-primary-lighter: #818cf8;
+  --ifm-color-primary-lightest: #a5b4fc;
+
+  /* Infima  -  typography */
+  --ifm-font-family-base: 'Satoshi', 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --ifm-heading-font-family: var(--ifm-font-family-base);
+  --ifm-font-size-base: 15px;
+  --ifm-line-height-base: 1.65;
+  --ifm-heading-color: var(--ink-900);
+  --ifm-font-color-base: var(--ink-700);
+  --ifm-font-color-secondary: var(--ink-500);
+
+  /* Infima  -  surfaces */
+  --ifm-background-color: var(--paper);
+  --ifm-background-surface-color: #ffffff;
+  --ifm-color-emphasis-100: var(--ink-50);
+  --ifm-color-emphasis-200: var(--ink-100);
+  --ifm-color-emphasis-300: var(--ink-200);
+  --ifm-color-emphasis-600: var(--ink-500);
+  --ifm-color-emphasis-700: var(--ink-700);
+  --ifm-color-emphasis-800: var(--ink-700);
+  --ifm-color-emphasis-900: var(--ink-900);
+  --ifm-toc-border-color: var(--ink-100);
+  --ifm-hr-background-color: var(--ink-100);
+
+  /* Infima  -  code */
+  --ifm-code-background: var(--ink-50);
+  --ifm-code-padding-vertical: 1px;
+  --ifm-code-padding-horizontal: 5px;
+  --ifm-code-border-radius: 4px;
+  --ifm-code-font-size: 88%;
+  --ifm-pre-background: var(--ink-900);
+  --ifm-pre-color: #d4d8e9;
+
+  /* Infima  -  links */
+  --ifm-link-color: var(--iris-700);
+  --ifm-link-hover-color: var(--iris-600);
+  --ifm-link-decoration: none;
+
+  /* Infima  -  menu / sidebar */
+  --ifm-menu-color: var(--ink-500);
+  --ifm-menu-color-active: var(--iris-700);
+  --ifm-menu-color-background-active: var(--iris-50);
+  --ifm-menu-color-background-hover: var(--ink-50);
+
+  /* Infima  -  TOC right rail */
+  --ifm-toc-link-color: var(--ink-500);
+
+  /* Infima  -  admonitions */
+  --ifm-alert-border-radius: 8px;
+  --ifm-alert-border-width: 1px;
+  --ifm-alert-padding-vertical: 14px;
+  --ifm-alert-padding-horizontal: 16px;
+
+  --docusaurus-highlighted-code-line-bg: rgba(99, 102, 241, 0.12);
+}
+
+/* ── Dark theme ────────────────────────────────────────────────────── */
+[data-theme='dark'] {
+  --paper: #0b1020;
+  --ink-900: #f4f5fb;
+  --ink-700: #d4d8e9;
+  --ink-500: #9aa1bd;
+  --ink-400: #6b7494;
+  --ink-300: #4a5375;
+  --ink-200: #2a3157;
+  --ink-100: #1f2547;
+  --ink-50:  #161a36;
+
+  --iris-700: #818cf8;
+  --iris-600: #6366f1;
+  --iris-500: #818cf8;
+  --iris-100: rgba(129, 140, 248, 0.15);
+  --iris-50:  rgba(129, 140, 248, 0.10);
+
+  --vantage-purple: var(--iris-700);
+  --vantage-purple-dark: var(--iris-900);
+  --vantage-button: var(--iris-500);
+
+  --ifm-color-primary: #818cf8;
+  --ifm-color-primary-dark: #6366f1;
+  --ifm-color-primary-darker: #5046e5;
+  --ifm-color-primary-darkest: #4338ca;
+  --ifm-color-primary-light: #a5b4fc;
+  --ifm-color-primary-lighter: #c7d2fe;
+  --ifm-color-primary-lightest: #e0e2fb;
+
+  --ifm-background-color: var(--paper);
+  --ifm-background-surface-color: #161a36;
+  --ifm-heading-color: var(--ink-900);
+  --ifm-font-color-base: var(--ink-700);
+
+  --ifm-toc-border-color: var(--ink-100);
+  --ifm-hr-background-color: var(--ink-100);
+  --ifm-code-background: var(--ink-100);
+  --ifm-pre-background: #060919;
+
+  --ifm-link-color: #a5b4fc;
+  --ifm-link-hover-color: #c7d2fe;
+
+  --ifm-menu-color: var(--ink-500);
+  --ifm-menu-color-active: #c7d2fe;
+  --ifm-menu-color-background-active: var(--iris-50);
+  --ifm-menu-color-background-hover: var(--ink-50);
+
+  --docusaurus-highlighted-code-line-bg: rgba(129, 140, 248, 0.18);
+}
+
+/* ── Body ──────────────────────────────────────────────────────────── */
+html {
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--ifm-font-family-base);
+  background: var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
+}
+
+/* ── Typography ────────────────────────────────────────────────────── */
+.markdown h1:first-child,
+.theme-doc-markdown h1:first-child,
+article h1:first-child {
+  font-size: 2.4rem;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 0.6rem;
+}
+
+.markdown h1,
+article h1,
+.theme-doc-markdown h1 {
+  color: var(--ink-900) !important;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.markdown h2,
+article h2,
+.theme-doc-markdown h2 {
+  color: var(--ink-900) !important;
+  font-weight: 700;
+  font-size: 1.65rem;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  margin-top: 3rem;
+  margin-bottom: 0.85rem;
+  scroll-margin-top: 80px;
+}
+
+.markdown h3,
+article h3 {
+  color: var(--ink-900) !important;
+  font-weight: 600;
+  font-size: 1.2rem;
+  letter-spacing: -0.01em;
+  margin-top: 2rem;
+  margin-bottom: 0.65rem;
+  scroll-margin-top: 80px;
+}
+
+.markdown h4,
+article h4 {
+  color: var(--ink-900) !important;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-top: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+
+[data-theme='dark'] .markdown h1,
+[data-theme='dark'] .markdown h2,
+[data-theme='dark'] .markdown h3,
+[data-theme='dark'] .markdown h4,
+[data-theme='dark'] article h1,
+[data-theme='dark'] article h2,
+[data-theme='dark'] article h3,
+[data-theme='dark'] article h4 {
+  color: var(--ink-900) !important;
+}
+
+.markdown p {
+  color: var(--ink-700);
+  max-width: 72ch;
+}
+
+.markdown a,
+article a {
+  color: var(--iris-700);
+  border-bottom: 1px solid var(--iris-100);
+  text-decoration: none;
+  transition: border-color .15s;
+}
+
+.markdown a:hover,
+article a:hover {
+  border-bottom-color: var(--iris-600);
+  text-decoration: none;
+}
+
+/* ── Inline code & kbd ─────────────────────────────────────────────── */
+.markdown code:not([class*='language-']) {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.86em;
+  background: var(--ink-50);
+  border: 1px solid var(--ink-100);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--ink-700);
+}
+
+[data-theme='dark'] .markdown code:not([class*='language-']) {
+  background: var(--ink-100);
+  border-color: var(--ink-200);
+  color: var(--ink-700);
+}
+
+kbd, .markdown kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--ifm-font-family-monospace);
+  color: var(--ink-700);
+  background: #fff;
+  border: 1px solid var(--ink-200);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  box-shadow: none;
+}
+
+[data-theme='dark'] kbd,
+[data-theme='dark'] .markdown kbd {
+  background: var(--ink-100);
+  color: var(--ink-700);
+  border-color: var(--ink-200);
+}
+
+/* ── Code blocks ───────────────────────────────────────────────────── */
+.theme-code-block {
+  border-radius: 7px !important;
+  box-shadow: var(--shadow-card) !important;
+  font-family: var(--ifm-font-family-monospace) !important;
+}
+
+.theme-code-block pre {
+  font-size: 13px !important;
+  line-height: 1.55 !important;
+}
+
+div[class^='codeBlockTitle'] {
+  background: var(--ink-700) !important;
+  color: var(--ink-300) !important;
+  border-bottom: 1px solid var(--ink-100) !important;
+  font-family: var(--ifm-font-family-monospace) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+/* ── Tables ────────────────────────────────────────────────────────── */
+.markdown table,
+article table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 14px 0;
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--ink-100);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+.markdown table th,
+article table th {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--ink-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--ink-50);
+  padding: 10px 14px;
+  border: 0;
+  border-bottom: 1px solid var(--ink-100);
+}
+
+.markdown table td,
+article table td {
+  padding: 10px 14px;
+  vertical-align: top;
+  border: 0;
+  border-bottom: 1px solid var(--ink-100);
+}
+
+.markdown table tr,
+article table tr {
+  background: var(--ifm-background-surface-color);
+  border: 0;
+}
+
+.markdown table tr:last-child td,
+article table tr:last-child td {
+  border-bottom: 0;
+}
+
+.markdown table td code,
+article table td code {
+  font-size: 12px;
+}
+
+[data-theme='dark'] .markdown table,
+[data-theme='dark'] article table {
+  background: var(--ifm-background-surface-color);
+  border-color: var(--ink-100);
+}
+
+[data-theme='dark'] .markdown table th,
+[data-theme='dark'] article table th {
+  background: var(--ink-50);
+  color: var(--ink-500);
+}
+
+/* ── Lists ─────────────────────────────────────────────────────────── */
+.markdown ul,
+.markdown ol {
+  margin: 0.5rem 0 1rem;
+  padding-left: 1.4rem;
+}
+
+.markdown li {
+  margin: 0.3rem 0;
+}
+
+.markdown li::marker {
+  color: var(--ink-300);
+}
+
+/* Tab lists should have no left padding (override .markdown ul) */
+.markdown .tabs {
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+/* ── Provider showcase (On-Premises clusters) ───────────────────────── */
+.provider-showcase {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+@media (max-width: 600px) {
+  .provider-showcase {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.provider-showcase-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.5rem 1rem;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: var(--ifm-global-radius);
+  background: var(--ifm-color-emphasis-0);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.provider-showcase-item:hover {
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.provider-showcase-item img {
+  width: 56px;
+  height: 56px;
+}
+
+.provider-showcase-item span {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ifm-color-emphasis-700);
+  letter-spacing: 0.01em;
+}
+
+html[data-theme='dark'] .provider-showcase-item {
+  background: var(--ifm-card-background-color);
+}
+
+
+
+/* ── Admonitions → callouts ─────────────────────────────────────────── */
+.theme-admonition,
+.alert {
+  border-radius: 8px !important;
+  border: 1px solid !important;
+  padding: 14px 16px !important;
+  margin: 18px 0 !important;
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+  box-shadow: none !important;
+}
+
+.theme-admonition p,
+.alert p {
+  margin-bottom: 6px;
+}
+
+.theme-admonition p:last-child,
+.alert p:last-child {
+  margin-bottom: 0;
+}
+
+/* note / info  -  iris */
+.theme-admonition-note,
+.alert--secondary,
+.theme-admonition-info,
+.alert--info {
+  background: var(--iris-50) !important;
+  border-color: var(--iris-100) !important;
+  color: var(--ink-700) !important;
+}
+
+/* tip / success  -  green */
+.theme-admonition-tip,
+.alert--success,
+.theme-admonition-success {
+  background: var(--green-50) !important;
+  border-color: #bbf7d0 !important;
+  color: #14532d !important;
+}
+
+/* warning / caution  -  amber */
+.theme-admonition-warning,
+.alert--warning,
+.theme-admonition-caution {
+  background: var(--amber-50) !important;
+  border-color: #fde68a !important;
+  color: #713f12 !important;
+}
+
+/* danger  -  rose */
+.theme-admonition-danger,
+.alert--danger {
+  background: var(--rose-50) !important;
+  border-color: #fecdd3 !important;
+  color: #881337 !important;
+}
+
+[data-theme='dark'] .theme-admonition-note,
+[data-theme='dark'] .alert--info,
+[data-theme='dark'] .theme-admonition-info {
+  background: rgba(99, 102, 241, 0.12) !important;
+  border-color: rgba(129, 140, 248, 0.3) !important;
+  color: var(--ink-700) !important;
+}
+
+[data-theme='dark'] .theme-admonition-tip,
+[data-theme='dark'] .alert--success {
+  background: rgba(34, 197, 94, 0.10) !important;
+  border-color: rgba(34, 197, 94, 0.3) !important;
+  color: #bbf7d0 !important;
+}
+
+[data-theme='dark'] .theme-admonition-warning,
+[data-theme='dark'] .alert--warning {
+  background: rgba(245, 158, 11, 0.10) !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+  color: #fde68a !important;
+}
+
+[data-theme='dark'] .theme-admonition-danger,
+[data-theme='dark'] .alert--danger {
+  background: rgba(244, 63, 94, 0.10) !important;
+  border-color: rgba(244, 63, 94, 0.3) !important;
+  color: #fecdd3 !important;
+}
+
+/* admonition heading row */
+.theme-admonition .admonitionHeading_node_modules-\@docusaurus-theme-classic-lib-theme-Admonition-Layout-styles-module,
+.theme-admonition div[class*='admonitionHeading'] {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  margin-bottom: 6px !important;
+}
+
+/* ── Blockquote ────────────────────────────────────────────────────── */
+.markdown blockquote {
+  border-left: 3px solid var(--iris-500);
+  padding: 4px 16px;
+  background: var(--iris-50);
+  border-radius: 0 6px 6px 0;
+  color: var(--ink-700);
+  margin: 16px 0;
+}
+
+[data-theme='dark'] .markdown blockquote {
+  background: rgba(99, 102, 241, 0.10);
+  color: var(--ink-700);
+}
+
+/* ── Guided how-to layout ─────────────────────────────────────────── */
+.guide-intro {
+  margin: 1.5rem 0 2rem;
+  padding: 1.25rem;
+  border: 1px solid var(--ink-100);
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at top right, rgba(99, 102, 241, 0.10), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(244, 245, 251, 0.96));
+  box-shadow: var(--shadow-card);
+}
+
+.guide-intro > p:last-child {
+  margin-bottom: 0;
+}
+
+.guide-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0 0;
+}
+
+.guide-meta-card {
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--ink-100);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.guide-meta-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--ink-400);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.guide-meta-value {
+  color: var(--ink-900);
+  font-weight: 600;
+}
+
+.guide-quick-links {
+  margin: 1.5rem 0 2rem;
+  padding: 1rem 1.25rem;
+  border-left: 3px solid var(--iris-500);
+  border-radius: 0 12px 12px 0;
+  background: var(--iris-50);
+}
+
+.guide-quick-links p {
+  margin-bottom: 0.55rem;
+}
+
+.guide-quick-links ul {
+  margin-bottom: 0;
+}
+
+.guide-steps {
+  display: grid;
+  gap: 1rem;
+  margin: 1.5rem 0 2rem;
+  counter-reset: guide-step-counter;
+}
+
+.guide-step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: start;
+  padding: 1.1rem 1.2rem;
+  border: 1px solid var(--ink-100);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: var(--shadow-card);
+}
+
+/* Heading-based steps: badge via CSS counter instead of manual span. */
+.guide-step:not(:has(.guide-step-number)) {
+  display: grid;
+  grid-template-columns: 2.2rem 1fr;
+  gap: 0.75rem 1rem;
+  align-items: center;
+  position: relative;
+  padding: 1.1rem;
+  counter-increment: guide-step-counter;
+}
+
+.guide-step:not(:has(.guide-step-number))::before {
+  content: counter(guide-step-counter);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 999px;
+  background: var(--iris-700);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.guide-step > h2,
+.guide-step > h3 {
+  margin: 0;
+  padding: 0;
+  border-bottom: none;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--ink-900);
+}
+
+.guide-step > h2 ~ *,
+.guide-step > h3 ~ * {
+  grid-column: 1 / -1;
+}
+
+.guide-note {
+  margin-top: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: var(--ink-50);
+  color: var(--ink-700);
+  font-size: 0.95rem;
+}
+
+.guide-related {
+  margin: 2rem 0;
+}
+
+.guide-related ul {
+  margin-bottom: 0;
+}
+
+[data-theme='dark'] .guide-intro {
+  border-color: var(--ink-100);
+  background:
+    radial-gradient(circle at top right, rgba(129, 140, 248, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(22, 26, 54, 0.96), rgba(11, 16, 32, 0.98));
+}
+
+[data-theme='dark'] .guide-meta-card,
+[data-theme='dark'] .guide-step {
+  border-color: var(--ink-100);
+  background: rgba(22, 26, 54, 0.88);
+}
+
+[data-theme='dark'] .guide-quick-links {
+  background: rgba(129, 140, 248, 0.10);
+}
+
+[data-theme='dark'] .guide-note {
+  background: rgba(244, 245, 251, 0.05);
+  color: var(--ink-700);
+}
+
+@media (max-width: 640px) {
+  .guide-intro {
+    padding: 1rem;
+  }
+
+  .guide-step {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+/* ── HR ─────────────────────────────────────────────────────────────── */
+.markdown hr {
+  border: 0;
+  height: 1px;
+  background: var(--ink-100);
+  margin: 32px 0;
+}
+
+/* ── Navbar (Vantage dark navigation) ──────────────────────────────── */
+:root {
+  --ifm-navbar-height: 64px;
+}
+
+.navbar {
+  background-color: #18123B;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 1px 0 rgba(15, 16, 32, 0.08);
+}
+
+.navbar__title,
+.navbar__item,
+.navbar__link {
+  color: white;
+}
+
+.navbar__items--right {
+  gap: 10px;
+}
+
+/* Remove default horizontal padding from search container  -  gap handles spacing */
+.navbar__items--right .navbarSearchContainer,
+.navbar__items--right [class*='navbarSearchContainer'] {
+  padding: 0 !important;
+}
+
+.navbar [class*="colorModeToggle"],
+.navbar button[aria-label*="Switch"] {
+  position: static !important;
+  transform: none !important;
+  flex-shrink: 0 !important;
+  z-index: 100 !important;
+}
+
+.navbar__brand {
+  padding-left: 6px;
+}
+
+.navbar__logo {
+  height: 2.25rem;
+}
+
+.navbar__link:hover {
+  color: var(--iris-100) !important;
+}
+
+@media (max-width: 1024px) {
+  .navbar__logo { display: none !important; }
+}
+
+/* ── Sidebar (left) ────────────────────────────────────────────────── */
+.theme-doc-sidebar-container {
+  border-right: 1px solid var(--ink-100) !important;
+  background: var(--ifm-background-color);
+}
+
+.menu {
+  padding: 1rem 0.75rem !important;
+  font-size: 14px;
+}
+
+.menu__list-item {
+  margin: 0;
+}
+
+.menu__link {
+  border-radius: 5px;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-weight: 450;
+  color: var(--ink-500);
+}
+
+.menu__link:hover {
+  background: var(--ink-50);
+  color: var(--ink-700);
+}
+
+.menu__link--active,
+.menu__link--active:hover {
+  background: var(--iris-50) !important;
+  color: var(--iris-700) !important;
+  font-weight: 600;
+}
+
+.menu__list-item-collapsible .menu__link--active {
+  background: var(--iris-50) !important;
+}
+
+.menu__list-item--collapsed .menu__link {
+  color: var(--ink-500);
+}
+
+/* Streamlined chevron  -  replace the chunky default Infima SVG with a
+   thin CSS-border chevron that animates rotation on collapse/expand. */
+.menu__caret,
+.menu__link--sublist-caret {
+  position: relative;
+}
+
+.menu__caret::before,
+.menu__link--sublist-caret::after {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin: 0 6px 0 auto;
+  background: none !important;
+  filter: none !important;
+  border: 0;
+  border-right: 1.5px solid var(--ink-400);
+  border-bottom: 1.5px solid var(--ink-400);
+  transform: rotate(45deg);          /* points down  -  expanded */
+  transition: transform 0.18s ease, border-color 0.15s;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.menu__caret { padding: 6px 8px; }
+
+.menu__caret:hover {
+  background: var(--ink-50) !important;
+}
+
+.menu__caret:hover::before,
+.menu__list-item-collapsible:hover .menu__link--sublist-caret::after {
+  border-color: var(--ink-700);
+}
+
+.menu__list-item-collapsible--active .menu__link--sublist-caret::after,
+.menu__list-item-collapsible--active .menu__caret::before {
+  border-color: var(--iris-700);
+}
+
+/* Collapsed → chevron points right */
+.menu__list-item--collapsed > .menu__link--sublist-caret::after,
+.menu__list-item--collapsed > .menu__list-item-collapsible > .menu__link--sublist-caret::after,
+.menu__list-item--collapsed > .menu__list-item-collapsible > .menu__caret::before,
+.menu__list-item--collapsed > .menu__caret::before {
+  transform: rotate(-45deg);
+}
+
+[data-theme='dark'] .menu__caret::before,
+[data-theme='dark'] .menu__link--sublist-caret::after {
+  border-color: var(--ink-400);
+}
+
+[data-theme='dark'] .menu__caret:hover::before,
+[data-theme='dark'] .menu__list-item-collapsible:hover .menu__link--sublist-caret::after {
+  border-color: var(--ink-700);
+}
+
+/* Section labels (top-level menu category) */
+.theme-doc-sidebar-item-category-level-1 > .menu__list-item-collapsible > .menu__link,
+.menu__list-item-collapsible:not(.menu__list-item-collapsible--active) > .menu__link.menu__link--sublist {
+  font-weight: 600;
+  color: var(--ink-700);
+}
+
+[data-theme='dark'] .menu__link {
+  color: var(--ink-500);
+}
+
+[data-theme='dark'] .menu__link:hover {
+  background: var(--ink-50);
+  color: var(--ink-700);
+}
+
+[data-theme='dark'] .menu__link--active,
+[data-theme='dark'] .menu__link--active:hover {
+  background: var(--iris-50) !important;
+  color: var(--iris-500) !important;
+}
+
+/* ── Right TOC (in-page nav) ───────────────────────────────────────── */
+/* Docusaurus places TOC on the right by default  -  reinforce design */
+.theme-doc-toc-desktop {
+  display: block !important;
+  border-left: 1px solid var(--ink-100);
+  padding: 1.5rem 1rem 2rem 1.25rem;
+  position: sticky;
+  top: var(--ifm-navbar-height);
+  max-height: calc(100vh - var(--ifm-navbar-height));
+  overflow-y: auto;
+}
+
+.table-of-contents {
+  font-size: 13px;
+  border-left: 0;
+  padding: 0;
+}
+
+.theme-doc-toc-desktop::before {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-400);
+  margin-bottom: 10px;
+  content: 'On this page';
+}
+
+/* hide Docusaurus' default TOC title since we render our own label above */
+.table-of-contents__title { display: none; }
+
+.table-of-contents__link {
+  display: block;
+  padding: 4px 8px;
+  border-left: 2px solid transparent;
+  color: var(--ink-500);
+  line-height: 1.4;
+  margin-left: -2px;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.table-of-contents__link:hover {
+  color: var(--ink-700) !important;
+  background: transparent !important;
+}
+
+.table-of-contents__link--active,
+.table-of-contents__link--active:hover {
+  color: var(--iris-700) !important;
+  border-left-color: var(--iris-600);
+  font-weight: 500;
+  background: transparent !important;
+}
+
+.table-of-contents .table-of-contents {
+  padding-left: 8px;
+}
+
+.table-of-contents li ul .table-of-contents__link {
+  padding-left: 16px;
+  font-size: 12.5px;
+}
+
+/* ── Mobile TOC ────────────────────────────────────────────────────── */
+.theme-doc-toc-mobile {
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--ink-100);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+/* ── Breadcrumbs ───────────────────────────────────────────────────── */
+.breadcrumbs {
+  font-size: 13px;
+  margin-bottom: 1rem;
+}
+
+.breadcrumbs__link {
+  color: var(--ink-400);
+  font-weight: 500;
+  border-bottom: 0 !important;
+}
+
+.breadcrumbs__link:hover,
+.breadcrumbs__link--active,
+.breadcrumbs__item--active .breadcrumbs__link {
+  color: var(--iris-700) !important;
+  background: var(--iris-50);
+}
+
+.breadcrumbs__item:not(:last-child)::after {
+  background: var(--ink-300);
+  opacity: 0.5;
+}
+
+/* navbar dropdown items */
+.navbar .dropdown > .dropdown__menu .dropdown__link,
+.navbar__items .dropdown__menu .dropdown__link {
+  color: var(--ink-700) !important;
+  padding: 10px 16px !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  border-radius: 0 !important;
+  transition: all .15s ease !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.navbar .dropdown > .dropdown__menu .dropdown__link:hover,
+.navbar__items .dropdown__menu .dropdown__link:hover {
+  background-color: var(--iris-50) !important;
+  color: var(--iris-700) !important;
+  transform: translateX(2px) !important;
+}
+
+/* ── Buttons (force white text on iris fills) ──────────────────────── */
+:root {
+  --ifm-button-color: #ffffff;
+}
+
+.button--primary,
+.button--primary:visited,
+.button--primary:hover,
+.button--primary:focus,
+.button--primary:active,
+a.button--primary,
+a.button--primary:visited,
+a.button--primary:hover,
+a.button--primary:focus,
+a.button--primary:active {
+  color: #ffffff !important;
+  background-color: var(--iris-700) !important;
+  border-color: var(--iris-700) !important;
+  text-decoration: none !important;
+}
+
+.button--primary:hover,
+a.button--primary:hover {
+  background-color: var(--iris-600) !important;
+  border-color: var(--iris-600) !important;
+}
+
+.button--secondary,
+.button--secondary:visited,
+a.button--secondary,
+a.button--secondary:visited {
+  color: var(--ink-900) !important;
+  background-color: #ffffff !important;
+  border: 1px solid var(--ink-200) !important;
+  text-decoration: none !important;
+}
+
+.button--secondary:hover,
+.button--secondary:focus,
+a.button--secondary:hover,
+a.button--secondary:focus {
+  color: var(--iris-700) !important;
+  background-color: var(--iris-50) !important;
+  border-color: var(--iris-200) !important;
+  text-decoration: none !important;
+}
+
+[data-theme='dark'] .button--secondary,
+[data-theme='dark'] .button--secondary:visited,
+[data-theme='dark'] a.button--secondary,
+[data-theme='dark'] a.button--secondary:visited {
+  color: var(--ink-900) !important;
+  background-color: var(--ifm-background-surface-color) !important;
+  border-color: var(--ink-200) !important;
+}
+
+[data-theme='dark'] .button--secondary:hover,
+[data-theme='dark'] a.button--secondary:hover {
+  color: #c7d2fe !important;
+  background-color: var(--iris-50) !important;
+  border-color: var(--iris-200) !important;
+}
+
+/* Any explicit purple/iris filled button  -  bulletproof white text */
+.button[class*='button--primary'],
+.button[style*='background'][class*='button--primary'] {
+  color: #ffffff !important;
+}
+
+/* ── Pagination ────────────────────────────────────────────────────── */
+.pagination-nav__link {
+  border-radius: 8px;
+  border: 1px solid var(--ink-100);
+  transition: border-color .15s, transform .12s, box-shadow .15s;
+}
+
+.pagination-nav__link:hover {
+  border-color: var(--iris-200);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-card);
+}
+
+.pagination-nav__link:hover .pagination-nav__label,
+.pagination-nav__link--active .pagination-nav__label {
+  color: var(--iris-700) !important;
+}
+
+.pagination-nav__sublabel {
+  color: var(--ink-400);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Cards (landing page) ──────────────────────────────────────────── */
+.card {
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--ink-100);
+  border-radius: 8px;
+  box-shadow: var(--shadow-card);
+  transition: border-color .15s, transform .12s;
+}
+
+.card:hover {
+  border-color: var(--iris-200);
+  transform: translateY(-1px);
+}
+
+.col--4 .card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.col--4 .card__body {
+  flex: 1;
+}
+
+.card__header h3,
+.card__header h4 {
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+
+.card__body p {
+  font-size: 13px;
+  color: var(--ink-500);
+  margin: 0;
+}
+
+/* ── Details / summary ─────────────────────────────────────────────── */
+details {
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--ink-100);
+  border-radius: 6px;
+  padding: 4px 0;
+}
+
+details summary {
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+  padding: 8px 14px;
+  font-weight: 500;
+  color: var(--ink-700);
+}
+
+details summary:hover {
+  background-color: var(--iris-50);
+  color: var(--iris-700);
+}
+
+details summary[onclick] {
+  color: var(--iris-700) !important;
+  font-weight: 600 !important;
+}
+
+details summary[onclick]:hover {
+  background-color: var(--iris-50) !important;
+  text-decoration: underline !important;
+}
+
+/* ── Footer ────────────────────────────────────────────────────────── */
+.footer {
+  background-color: var(--iris-900) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footer--dark {
+  background-color: var(--iris-900) !important;
+}
+
+.footer__title,
+.footer__item,
+.footer__link-item,
+.footer__copyright {
+  color: white !important;
+}
+
+.footer__title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--iris-200) !important;
+}
+
+.footer__link-item:hover {
+  color: var(--iris-200) !important;
+}
+
+.footer__separator {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.footer__links {
+  justify-content: center !important;
+}
+
+.footer__col {
+  text-align: center !important;
+}
+
+.footer__logo {
+  height: auto !important;
+  width: auto !important;
+  max-height: 60px;
+}
+
+.footer__link-social {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 40px !important;
+  height: 40px !important;
+  margin: 0 8px 8px 0 !important;
+  padding: 8px !important;
+  border-radius: 8px !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.3s ease !important;
+  text-decoration: none !important;
+}
+
+.footer__link-social:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  transform: translateY(-2px) !important;
+  text-decoration: none !important;
+}
+
+.footer__link-social img {
+  width: 24px !important;
+  height: 24px !important;
+  filter: brightness(0) invert(1) !important;
+  transition: all 0.3s ease !important;
+}
+
+.footer__link-social:hover img {
+  filter: brightness(0) invert(1) !important;
+  transform: scale(1.1) !important;
+}
+
+[data-theme='dark'] .footer__link-social img {
+  filter: brightness(0) invert(1) !important;
+}
+
+[data-theme='light'] .footer__link-social img {
+  filter: brightness(0) invert(1) !important;
+}
+
+/* ── DocSearch (Algolia)  -  full theme ──────────────────────────────── */
+:root {
+  /* Core */
+  --docsearch-primary-color:          var(--iris-700);
+  --docsearch-text-color:             var(--ink-700);
+  --docsearch-spacing:                12px;
+  --docsearch-icon-stroke-width:      1.4;
+  --docsearch-highlight-color:        var(--iris-700);
+  --docsearch-muted-color:            var(--ink-400);
+  /* Backdrop */
+  --docsearch-container-background:   rgba(11, 16, 32, 0.48);
+  /* Modal */
+  --docsearch-modal-background:       #ffffff;
+  --docsearch-modal-shadow:           0 24px 64px -12px rgba(11, 16, 32, 0.22),
+                                      0 4px 16px -4px rgba(11, 16, 32, 0.10);
+  /* Search input */
+  --docsearch-searchbox-background:   var(--ink-50);
+  --docsearch-searchbox-focus-background: #ffffff;
+  --docsearch-searchbox-shadow:       inset 0 0 0 1.5px var(--iris-700);
+  /* Hits */
+  --docsearch-hit-color:              var(--ink-700);
+  --docsearch-hit-active-color:       #ffffff;
+  --docsearch-hit-background:         transparent;
+  --docsearch-hit-shadow:             none;
+  /* Keyboard key badges */
+  --docsearch-key-gradient:           none;
+  --docsearch-key-shadow:             none;
+  /* Footer */
+  --docsearch-footer-background:      var(--ink-50);
+  --docsearch-footer-shadow:          0 -1px 0 var(--ink-100);
+}
+
+[data-theme='dark'] {
+  /* Core  -  ink palette is inverted in dark mode */
+  --docsearch-primary-color:          #818cf8;
+  --docsearch-text-color:             var(--ink-700);
+  --docsearch-highlight-color:        #818cf8;
+  --docsearch-muted-color:            var(--ink-400);
+  /* Backdrop */
+  --docsearch-container-background:   rgba(0, 0, 0, 0.65);
+  /* Modal */
+  --docsearch-modal-background:       #161a36;
+  --docsearch-modal-shadow:           0 24px 64px -12px rgba(0, 0, 0, 0.5),
+                                      0 4px 16px -4px rgba(0, 0, 0, 0.3);
+  /* Search input */
+  --docsearch-searchbox-background:   #1f2547;
+  --docsearch-searchbox-focus-background: #1f2547;
+  --docsearch-searchbox-shadow:       inset 0 0 0 1.5px #818cf8;
+  /* Hits */
+  --docsearch-hit-color:              var(--ink-700);
+  --docsearch-hit-active-color:       #ffffff;
+  --docsearch-hit-background:         transparent;
+  --docsearch-hit-shadow:             none;
+  /* Keyboard key badges */
+  --docsearch-key-gradient:           none;
+  --docsearch-key-shadow:             none;
+  /* Footer */
+  --docsearch-footer-background:      #0b1020;
+  --docsearch-footer-shadow:          0 -1px 0 #1f2547;
+}
+
+/* ── Navbar search ──────────────────────────────────────────────────── */
+.DocSearch-Button,
+button.DocSearch-Button {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  height: 36px !important;
+  width: 400px !important;
+  padding: 0 14px !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  border-radius: 8px !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  font: inherit !important;
+  font-size: 13px !important;
+  cursor: pointer !important;
+  transition: background 0.15s, border-color 0.15s !important;
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+.DocSearch-Button:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.38) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: none !important;
+}
+
+.DocSearch-Button-Container {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Search icon in button */
+.DocSearch-Button .DocSearch-Search-Icon {
+  color: rgba(255, 255, 255, 0.7) !important;
+  width: 14px !important;
+  height: 14px !important;
+  flex-shrink: 0 !important;
+}
+
+.DocSearch-Button-Placeholder {
+  flex: 1 !important;
+  text-align: left !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-weight: 400 !important;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Keyboard shortcut badge */
+.DocSearch-Button-Keys {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  border-radius: 4px !important;
+  padding: 2px 6px !important;
+  flex-shrink: 0 !important;
+}
+
+.DocSearch-Button-Key {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-family: var(--ifm-font-family-monospace) !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
+/* Medium: hide AskAI, shrink search pill */
+@media (max-width: 1050px) {
+  .navbar__items [data-navbar-ask-ai] { display: none !important; }
+
+  .DocSearch-Button {
+    min-width: 180px !important;
+  }
+}
+
+/* Small: search pill drops to icon-only */
+@media (max-width: 800px) {
+  .DocSearch-Button {
+    min-width: 0 !important;
+    width: 36px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+  }
+  .DocSearch-Button-Placeholder,
+  .DocSearch-Button-Keys { display: none !important; }
+  .DocSearch-Button .DocSearch-Search-Icon {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+}
+
+/* Dark mode: same squared style */
+[data-theme='dark'] .DocSearch-Button,
+[data-theme='dark'] button.DocSearch-Button {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+[data-theme='dark'] .DocSearch-Button:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.38) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+[data-theme='dark'] .DocSearch-Button-Placeholder {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+[data-theme='dark'] .DocSearch-Button-Keys {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+}
+
+[data-theme='dark'] .DocSearch-Button-Key {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* ── Search modal ───────────────────────────────────────────────────── */
+.DocSearch-Modal {
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  max-width: 680px !important;
+}
+
+/* Search input row */
+.DocSearch-SearchBar {
+  padding: 14px 16px 10px !important;
+  border-bottom: 1px solid var(--ink-100) !important;
+}
+
+[data-theme='dark'] .DocSearch-SearchBar {
+  border-bottom-color: #1f2547 !important;
+}
+
+[data-theme='dark'] .DocSearch-Footer {
+  border-top-color: #1f2547 !important;
+}
+
+[data-theme='dark'] .DocSearch-Hit-source {
+  color: #6b7494 !important;
+}
+
+.DocSearch-Form {
+  background: var(--docsearch-searchbox-background) !important;
+  border-radius: 8px !important;
+  border: 1.5px solid var(--ink-200) !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s !important;
+}
+
+.DocSearch-Form:focus-within {
+  border-color: var(--docsearch-primary-color) !important;
+  background: var(--docsearch-searchbox-focus-background) !important;
+  box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.12) !important;
+}
+
+[data-theme='dark'] .DocSearch-Form:focus-within {
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15) !important;
+}
+
+.DocSearch-MagnifierLabel,
+.DocSearch-Form .DocSearch-Search-Icon {
+  color: var(--docsearch-muted-color) !important;
+}
+
+.DocSearch-Input {
+  font-size: 15px !important;
+  color: var(--docsearch-text-color) !important;
+  background: transparent !important;
+}
+
+.DocSearch-Input::placeholder { color: var(--docsearch-muted-color) !important; }
+
+.DocSearch-Reset {
+  color: var(--docsearch-muted-color) !important;
+}
+.DocSearch-Reset:hover { color: var(--docsearch-text-color) !important; }
+
+/* Results panel */
+.DocSearch-Dropdown {
+  padding: 8px 0 !important;
+}
+
+/* Start screen (no query)  -  shrink dropdown to fit recent searches content */
+.DocSearch-Modal:has(.DocSearch-Input:placeholder-shown) .DocSearch-Dropdown {
+  height: auto !important;
+  max-height: var(--docsearch-modal-variable-height) !important;
+}
+
+/* Start screen  -  section labels should not be sticky (no scrolling needed) */
+.DocSearch-Modal:has(.DocSearch-Input:placeholder-shown) .DocSearch-Hit-source {
+  position: static !important;
+}
+
+/* Category header above result groups */
+.DocSearch-Hit-source {
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.07em !important;
+  text-transform: uppercase !important;
+  color: var(--docsearch-muted-color) !important;
+  padding: 10px 20px 4px !important;
+  margin: 0 !important;
+  background: transparent !important;
+}
+
+/* Individual hit items */
+.DocSearch-Hit {
+  padding: 0 8px !important;
+}
+
+.DocSearch-Hit a {
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  background: var(--docsearch-hit-background) !important;
+  box-shadow: none !important;
+  border: 1px solid transparent !important;
+  transition: background 0.1s, border-color 0.1s !important;
+}
+
+.DocSearch-Hit[aria-selected='true'] a {
+  background: var(--docsearch-primary-color) !important;
+  border-color: transparent !important;
+}
+
+.DocSearch-Hit-title {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: var(--docsearch-text-color) !important;
+}
+
+.DocSearch-Hit-path {
+  font-size: 12px !important;
+  color: var(--docsearch-muted-color) !important;
+}
+
+.DocSearch-Hit[aria-selected='true'] .DocSearch-Hit-title,
+.DocSearch-Hit[aria-selected='true'] .DocSearch-Hit-path,
+.DocSearch-Hit[aria-selected='true'] .DocSearch-Hit-icon,
+.DocSearch-Hit[aria-selected='true'] .DocSearch-Hit-action {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.DocSearch-Hit mark {
+  color: var(--docsearch-highlight-color) !important;
+  background: transparent !important;
+  font-weight: 600 !important;
+}
+
+.DocSearch-Hit[aria-selected='true'] mark {
+  color: rgba(255, 255, 255, 1) !important;
+  text-decoration: underline !important;
+  background: transparent !important;
+}
+
+/* Hit icon */
+.DocSearch-Hit-icon {
+  color: var(--docsearch-muted-color) !important;
+}
+
+/* ── Footer  -  keyboard hints, NO Algolia branding ───────────────────── */
+.DocSearch-Footer {
+  border-radius: 0 0 12px 12px !important;
+  border-top: 1px solid var(--ink-100) !important;
+  background: var(--docsearch-footer-background) !important;
+  box-shadow: none !important;
+  padding: 10px 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+/* Hide Algolia logo */
+.DocSearch-Logo,
+.DocSearch-Footer a[href*='algolia'],
+.DocSearch-PoweredBy {
+  display: none !important;
+}
+
+/* Keyboard shortcut labels in footer */
+.DocSearch-Commands {
+  gap: 16px !important;
+}
+
+.DocSearch-Commands-Key {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 1px solid var(--ink-300) !important;
+  border-radius: 4px !important;
+  color: var(--ink-400) !important;
+  font-family: var(--ifm-font-family-monospace) !important;
+  font-size: 10px !important;
+  padding: 2px 5px !important;
+  min-width: 18px !important;
+  text-align: center !important;
+  line-height: 1.4 !important;
+}
+
+[data-theme='dark'] .DocSearch-Commands-Key {
+  border-color: #2a3157 !important;
+  color: #6b7494 !important;
+}
+
+.DocSearch-Label {
+  font-size: 11px !important;
+  color: var(--ink-400) !important;
+}
+
+/* Empty / no results state */
+.DocSearch-NoResults-Prefill-List,
+.DocSearch-NoResults {
+  padding: 20px !important;
+}
+
+.DocSearch-NoResults-Prefill-List .DocSearch-Hit-source {
+  padding-left: 0 !important;
+}
+
+/* Start screen (recent searches / favorites) */
+.DocSearch-StartScreen {
+  padding: 20px !important;
+}
+
+/* Hit-action button (clipboard icon on right) */
+.DocSearch-Hit-action {
+  color: var(--docsearch-muted-color) !important;
+}
+
+.DocSearch-Hit[aria-selected='true'] .DocSearch-Hit-action:hover {
+  color: #ffffff !important;
+}
+
+/* ── /search dedicated search results page ─────────────────────────── */
+.search-page-wrapper,
+[class*='searchResultsColumn'],
+[class*='SearchPage'] {
+  max-width: 760px !important;
+  margin: 0 auto !important;
+  padding: 40px 24px !important;
+}
+
+/* The DocSearch container on the search page opens in-page, not as overlay */
+.DocSearch-Container--Stalled,
+.DocSearch-Container {
+  /* When rendered on /search page, remove the fixed overlay */
+}
+
+/* On the /search page, the DocSearch opens as an overlay  -  this makes
+   the backdrop less prominent since users are already on a search-focused page */
+html[data-search-page] .DocSearch-Container {
+  background: transparent !important;
+}
+
+/* ── Page layout fixes ─────────────────────────────────────────────── */
+.docsWrapper_bSxm {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+.docMainContainer_TBSr {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+  margin-left: 0 !important;
+  flex: 1 !important;
+}
+
+.docMainContainer_TBSr .container {
+  padding-top: 1rem !important;
+}
+
+/* Subtle paper texture for the doc background */
+.theme-doc-markdown,
+article {
+  background: var(--ifm-background-color);
+}
+
+/* ── Selection ─────────────────────────────────────────────────────── */
+::selection {
+  background: var(--iris-100);
+  color: var(--ink-900);
+}
+
+[data-theme='dark'] ::selection {
+  background: rgba(129, 140, 248, 0.3);
+  color: var(--ink-900);
+}
+
+/* ── Scrollbar (subtle, design-matching) ───────────────────────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ink-200) transparent;
+}
+
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: var(--ink-200);
+  border-radius: 4px;
+}
+*::-webkit-scrollbar-thumb:hover { background: var(--ink-300); }
+
+/* ── Sidebar section labels (Products / Platform / Reference / About) ─ */
+.sidebar-section-label {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-400);
+  padding: 14px 0 6px;
+  margin-top: 8px;
+  border-top: 1px solid var(--ink-100);
+  text-align: left;
+}
+.sidebar-section-label--sub {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 10px 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-400);
+  text-align: left;
+}
+.menu > .menu__list > li:first-child .sidebar-section-label,
+.theme-doc-sidebar-menu > li:first-child .sidebar-section-label {
+  border-top: 0;
+  margin-top: 0;
+}
+
+/* DocItem layout renders the H1 from frontmatter; hide the markdown body's
+   first H1 to avoid duplication. */
+.theme-doc-markdown > header > h1,
+.markdown > header > h1,
+.theme-doc-markdown > article > h1:first-of-type {
+  display: none;
+}
+
+
+/* Chat sidebar  -  push layout (navbar excluded) */
+.main-wrapper {
+  transition: margin-right 0.3s ease-in-out;
+}
+
+body.chat-open .main-wrapper {
+  margin-right: 400px;
+}
+
+@media (max-width: 480px) {
+  body.chat-open .main-wrapper {
+    margin-right: 0;
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "name": "@vantagecompute/docusaurus-theme",
+  "version": "0.1.0",
+  "description": "Shared Vantage Compute Docusaurus theme — design system, brand assets, and common theme overrides for all vantagecompute documentation sites.",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "static",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "@docusaurus/core": "^3.0.0",
+    "@docusaurus/theme-common": "^3.0.0",
+    "@docusaurus/plugin-content-docs": "^3.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "dependencies": {
+    "clsx": "^2.0.0",
+    "unist-util-visit": "^5.0.0"
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "^3.10.1",
+    "@docusaurus/tsconfig": "^3.10.1",
+    "@docusaurus/types": "^3.10.1",
+    "@types/react": "^19.2.17",
+    "typescript": "~5.6.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vantagecompute/vantage-docusaurus-theme.git"
+  },
+  "keywords": [
+    "docusaurus",
+    "docusaurus-theme",
+    "vantage",
+    "vantagecompute",
+    "documentation"
+  ]
+}

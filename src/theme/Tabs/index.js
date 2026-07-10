@@ -11,7 +11,7 @@
  * `useTabsContextValue` (for value extraction) and the rendered
  * `TabsContainer`.
  */
-import React from 'react';
+import {useRef} from 'react';
 import clsx from 'clsx';
 import {ThemeClassNames} from '@docusaurus/theme-common';
 import {
@@ -26,12 +26,12 @@ import styles from './styles.module.css';
 
 function TabList({className}) {
   const {selectedValue, selectValue, tabValues, block} = useTabs();
-  const tabRefs = [];
+  const tabRefs = useRef([]);
   const {blockElementScrollPositionUntilNextRender} =
     useScrollPositionBlocker();
   const handleTabChange = (event) => {
     const newTab = event.currentTarget;
-    const newTabIndex = tabRefs.indexOf(newTab);
+    const newTabIndex = tabRefs.current.indexOf(newTab);
     const newTabValue = tabValues[newTabIndex].value;
     if (newTabValue !== selectedValue) {
       blockElementScrollPositionUntilNextRender(newTab);
@@ -46,13 +46,13 @@ function TabList({className}) {
         break;
       }
       case 'ArrowRight': {
-        const nextTab = tabRefs.indexOf(event.currentTarget) + 1;
-        focusElement = tabRefs[nextTab] ?? tabRefs[0];
+        const nextTab = tabRefs.current.indexOf(event.currentTarget) + 1;
+        focusElement = tabRefs.current[nextTab] ?? tabRefs.current[0];
         break;
       }
       case 'ArrowLeft': {
-        const prevTab = tabRefs.indexOf(event.currentTarget) - 1;
-        focusElement = tabRefs[prevTab] ?? tabRefs[tabRefs.length - 1];
+        const prevTab = tabRefs.current.indexOf(event.currentTarget) - 1;
+        focusElement = tabRefs.current[prevTab] ?? tabRefs.current[tabRefs.current.length - 1];
         break;
       }
       default:
@@ -78,7 +78,7 @@ function TabList({className}) {
           aria-selected={selectedValue === value}
           key={value}
           ref={(ref) => {
-            tabRefs.push(ref);
+            tabRefs.current.push(ref);
           }}
           onKeyDown={handleKeydown}
           onClick={handleTabChange}

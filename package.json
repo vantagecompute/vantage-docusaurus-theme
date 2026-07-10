@@ -1,6 +1,6 @@
 {
   "name": "@vantagecompute/docusaurus-theme",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "Shared Vantage Compute Docusaurus theme — design system, brand assets, and common theme overrides for all vantagecompute documentation sites.",
   "license": "MIT",
   "main": "lib/index.js",

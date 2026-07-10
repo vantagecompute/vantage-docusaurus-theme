@@ -2,7 +2,6 @@
  * Custom DocBreadcrumbs component that ensures full path representation
  * e.g., Home -> Platform -> <platform page>
  */
-import React from 'react';
 import clsx from 'clsx';
 import {ThemeClassNames} from '@docusaurus/theme-common';
 import {useSidebarBreadcrumbs} from '@docusaurus/plugin-content-docs/client';

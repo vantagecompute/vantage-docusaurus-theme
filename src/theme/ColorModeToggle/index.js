@@ -1,4 +1,4 @@
-import React from 'react'
+import {memo} from 'react'
 import clsx from 'clsx'
 import useIsBrowser from '@docusaurus/useIsBrowser'
 import { translate } from '@docusaurus/Translate'
@@ -57,4 +57,4 @@ function ColorModeToggle({ className, buttonClassName, value, onChange }) {
     </div>
   )
 }
-export default React.memo(ColorModeToggle)
+export default memo(ColorModeToggle)

@@ -32,4 +32,5 @@ export default function themeVantage(): Plugin {
  */
 export const staticDir = path.resolve(__dirname, '../static');
 
-export { default as rehypeTabsTransform } from './utils/rehypeTabsTransform';
+// Re-export the rehype utility (plain JS, lives in src/utils/)
+export const rehypeTabsTransform = require(path.resolve(__dirname, '../src/utils/rehypeTabsTransform'));

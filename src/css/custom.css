@@ -792,24 +792,63 @@ html[data-theme='dark'] .provider-showcase-item {
 }
 
 /* ── Navbar (Vantage dark navigation) ──────────────────────────────── */
+/*
+ * Customisable via CSS custom properties — set any of these in your
+ * project's custom.css :root {} block to override the defaults:
+ *
+ *   --vantage-navbar-bg              Navbar background colour
+ *   --vantage-navbar-border          Bottom border colour
+ *   --vantage-navbar-shadow          Box-shadow value
+ *   --vantage-navbar-text            Text / link colour
+ *   --vantage-navbar-link-hover      Link hover colour
+ *   --vantage-navbar-logo-height     Logo height
+ *   --vantage-navbar-logo-hide-bp    Breakpoint below which logo hides
+ *   --vantage-navbar-brand-pl        Left padding on the brand area
+ *   --vantage-navbar-items-gap       Gap between right-side items
+ *   --vantage-footer-bg              Footer background colour
+ *   --vantage-footer-text            Footer text colour
+ *   --vantage-footer-title-color     Footer section-title colour
+ *   --vantage-footer-link-hover      Footer link hover colour
+ *   --vantage-footer-separator       Footer separator colour
+ *   --vantage-footer-logo-max-h      Footer logo max-height
+ */
 :root {
   --ifm-navbar-height: 64px;
+
+  /* Navbar defaults */
+  --vantage-navbar-bg:            #18123B;
+  --vantage-navbar-border:        rgba(255, 255, 255, 0.05);
+  --vantage-navbar-shadow:        0 1px 0 rgba(15, 16, 32, 0.08);
+  --vantage-navbar-text:          #ffffff;
+  --vantage-navbar-link-hover:    var(--iris-100);
+  --vantage-navbar-logo-height:   2.25rem;
+  --vantage-navbar-logo-hide-bp:  1024px;
+  --vantage-navbar-brand-pl:      6px;
+  --vantage-navbar-items-gap:     10px;
+
+  /* Footer defaults */
+  --vantage-footer-bg:            var(--iris-900);
+  --vantage-footer-text:          #ffffff;
+  --vantage-footer-title-color:   var(--iris-200);
+  --vantage-footer-link-hover:    var(--iris-200);
+  --vantage-footer-separator:     rgba(255, 255, 255, 0.12);
+  --vantage-footer-logo-max-h:    60px;
 }
 
 .navbar {
-  background-color: #18123B;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 1px 0 rgba(15, 16, 32, 0.08);
+  background-color: var(--vantage-navbar-bg);
+  border-bottom: 1px solid var(--vantage-navbar-border);
+  box-shadow: var(--vantage-navbar-shadow);
 }
 
 .navbar__title,
 .navbar__item,
 .navbar__link {
-  color: white;
+  color: var(--vantage-navbar-text);
 }
 
 .navbar__items--right {
-  gap: 10px;
+  gap: var(--vantage-navbar-items-gap);
 }
 
 /* Remove default horizontal padding from search container  -  gap handles spacing */
@@ -827,15 +866,15 @@ html[data-theme='dark'] .provider-showcase-item {
 }
 
 .navbar__brand {
-  padding-left: 6px;
+  padding-left: var(--vantage-navbar-brand-pl);
 }
 
 .navbar__logo {
-  height: 2.25rem;
+  height: var(--vantage-navbar-logo-height);
 }
 
 .navbar__link:hover {
-  color: var(--iris-100) !important;
+  color: var(--vantage-navbar-link-hover) !important;
 }
 
 @media (max-width: 1024px) {
@@ -1246,19 +1285,19 @@ details summary[onclick]:hover {
 
 /* ── Footer ────────────────────────────────────────────────────────── */
 .footer {
-  background-color: var(--iris-900) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: var(--vantage-footer-bg) !important;
+  border-top: 1px solid var(--vantage-navbar-border);
 }
 
 .footer--dark {
-  background-color: var(--iris-900) !important;
+  background-color: var(--vantage-footer-bg) !important;
 }
 
 .footer__title,
 .footer__item,
 .footer__link-item,
 .footer__copyright {
-  color: white !important;
+  color: var(--vantage-footer-text) !important;
 }
 
 .footer__title {
@@ -1266,15 +1305,15 @@ details summary[onclick]:hover {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 700;
-  color: var(--iris-200) !important;
+  color: var(--vantage-footer-title-color) !important;
 }
 
 .footer__link-item:hover {
-  color: var(--iris-200) !important;
+  color: var(--vantage-footer-link-hover) !important;
 }
 
 .footer__separator {
-  background-color: rgba(255, 255, 255, 0.12) !important;
+  background-color: var(--vantage-footer-separator) !important;
 }
 
 .footer__links {
@@ -1288,7 +1327,7 @@ details summary[onclick]:hover {
 .footer__logo {
   height: auto !important;
   width: auto !important;
-  max-height: 60px;
+  max-height: var(--vantage-footer-logo-max-h);
 }
 
 .footer__link-social {

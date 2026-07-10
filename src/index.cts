@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 import type { Plugin } from '@docusaurus/types';
 
 export default function themeVantage(): Plugin {

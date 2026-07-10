@@ -13,7 +13,7 @@ import HomeBreadcrumbItem from '@theme/DocBreadcrumbs/Items/Home';
 import DocBreadcrumbsStructuredData from '@theme/DocBreadcrumbs/StructuredData';
 import styles from './styles.module.css';
 
-function BreadcrumbsItemLink({children, href, isLast}: {children: React.ReactNode, href?: string, isLast: boolean}) {
+function BreadcrumbsItemLink({children, href, isLast}) {
   const className = 'breadcrumbs__link';
   if (isLast) {
     return <span className={className}>{children}</span>;
@@ -27,7 +27,7 @@ function BreadcrumbsItemLink({children, href, isLast}: {children: React.ReactNod
   );
 }
 
-function BreadcrumbsItem({children, active}: {children: React.ReactNode, active: boolean}) {
+function BreadcrumbsItem({children, active}) {
   return (
     <li
       className={clsx('breadcrumbs__item', {

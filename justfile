@@ -36,8 +36,8 @@ release version:
         exit 1
     fi
     echo "📦 Bumping to v{{version}}..."
-    npm version "{{version}}" --no-git-tag-version
-    git add package.json package-lock.json
+    yarn version --new-version "{{version}}" --no-git-tag-version
+    git add package.json yarn.lock
     git commit -m "release: v{{version}}"
     git tag "v{{version}}"
     git push && git push origin "v{{version}}"

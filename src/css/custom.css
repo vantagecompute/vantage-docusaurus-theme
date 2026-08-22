@@ -1881,11 +1881,39 @@ article {
 }
 
 
-/* ── Navbar version badge ──────────────────────────────────────────── */
-.navbar__brand-with-version {
+/* ── Navbar centered title + version badge ─────────────────────────── */
+
+/* Anchor for the absolutely-centered title below. */
+.navbar__inner {
+  position: relative;
+}
+
+/* theme-classic renders the title inside the brand <a>, beside the logo.
+   Hide it there and let Navbar/Logo re-render it centered, so the version
+   badge can sit immediately to its right. The brand link stays reachable
+   via the logo image's alt text. */
+.navbar__brand .navbar__title {
+  display: none;
+}
+
+.navbar__center-title {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
-  align-items: center;
-  gap: 0;
+  align-items: baseline;
+  gap: 6px;
+  white-space: nowrap;
+  z-index: 1;
+  /* Never swallow clicks meant for the brand link or navbar items. */
+  pointer-events: none;
+}
+
+.navbar__center-title-text {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--vantage-navbar-text);
 }
 
 .navbar__version-badge {
@@ -1895,7 +1923,18 @@ article {
   color: var(--vantage-navbar-text);
   white-space: nowrap;
   letter-spacing: 0.01em;
-  padding-left: 6px;
+}
+
+/* On narrow screens the centered title would collide with the hamburger
+   and the right-hand items, so drop it and restore the in-brand title. */
+@media (max-width: 996px) {
+  .navbar__center-title {
+    display: none;
+  }
+
+  .navbar__brand .navbar__title {
+    display: revert;
+  }
 }
 
 /* Chat sidebar  -  push layout (navbar excluded) */

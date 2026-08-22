@@ -7,18 +7,36 @@ import React from 'react';
 import Logo from '@theme-init/Navbar/Logo';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 
+/**
+ * Brand logo on the left, plus a centered title with the project version
+ * immediately to its right.
+ *
+ * The title cannot just be centered in place: theme-classic renders it inside
+ * the brand <a>, beside the logo, so centering it would drag the logo along.
+ * Instead the in-brand title is hidden by CSS and re-rendered here as its own
+ * absolutely-centered element, which lets the version badge sit next to it.
+ */
 export default function LogoWrapper(props) {
   const {siteConfig} = useDocusaurusContext();
-  const version = siteConfig.customFields?.projectVersion;
+
+  const raw = siteConfig.customFields?.projectVersion;
+  const version = raw
+    ? String(raw).startsWith('v')
+      ? String(raw)
+      : `v${raw}`
+    : null;
+
+  const title = siteConfig.themeConfig?.navbar?.title;
 
   return (
-    <div className="navbar__brand-with-version">
+    <>
       <Logo {...props} />
-      {version && (
-        <span className="navbar__version-badge">
-          {String(version).startsWith('v') ? version : `v${version}`}
-        </span>
+      {(title || version) && (
+        <div className="navbar__center-title">
+          {title && <span className="navbar__center-title-text">{title}</span>}
+          {version && <span className="navbar__version-badge">{version}</span>}
+        </div>
       )}
-    </div>
+    </>
   );
 }

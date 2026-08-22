@@ -18,11 +18,17 @@ jobs:
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
+          cache: yarn
+          cache-dependency-path: yarn.lock
 
-      - run: npm ci
+      - name: Enable corepack
+        run: corepack enable
 
-      - run: npm run build
+      - run: yarn install --frozen-lockfile
 
+      - run: yarn build
+
+      # Publish stays on the npm CLI: yarn 1 cannot emit provenance attestations.
       - run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

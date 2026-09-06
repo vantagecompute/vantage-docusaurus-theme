@@ -30,12 +30,15 @@ clean:
 # Documentation site (docusaurus/)
 #
 # Published as a spoke under docs.vantagecompute.ai/developer/docusaurus-theme/.
-# It installs @vantagecompute/docusaurus-theme from npm at a PINNED version
-# rather than through a file: link to this working tree. That is deliberate: the
-# site then renders what consumers actually get, and a release that ships a
-# tarball missing something the build needs fails here first. The cost is that
-# the pin trails the package by up to one release -- move it with `docs-pin`
-# once the version is on npm.
+# It installs @vantagecompute/docusaurus-theme from npm rather than through a
+# file: link to this working tree. That is deliberate: the site then renders
+# what consumers actually get, and a release that ships a tarball missing
+# something the build needs fails here first.
+#
+# The declared range is ^0.4.7, so patch releases arrive on the next deploy with
+# no commit. `docs-pin` is for crossing a minor, which stays deliberate. Note
+# that `npm ci` is lockfile-exact, so both workflows run
+# `npm update --no-save @vantagecompute/docusaurus-theme` after installing.
 # ---------------------------------------------------------------------------
 
 # Install the docs site's dependencies
@@ -60,7 +63,8 @@ docs-build: docs-install
 docs-clean:
     rm -rf docusaurus/build docusaurus/.docusaurus
 
-# Point the docs site at a published theme version, and refresh its lockfile
+# Move the docs site's theme range to ^<version>, and refresh its lockfile.
+# Only needed to cross a minor: patch releases are already inside the range.
 [group("docs")]
 docs-pin version:
     #!/usr/bin/env bash
@@ -71,9 +75,9 @@ docs-pin version:
         exit 1
     fi
     cd docusaurus
-    npm pkg set 'dependencies.@vantagecompute/docusaurus-theme={{version}}'
+    npm pkg set 'dependencies.@vantagecompute/docusaurus-theme=^{{version}}'
     npm install
-    echo "✅ Docs site pinned to {{version}}. Commit docusaurus/package.json and package-lock.json."
+    echo "✅ Docs site now tracks ^{{version}}. Commit docusaurus/package.json and package-lock.json."
 
 # Bump version, commit, tag, push, and create GitHub release to trigger npm publish
 [group("release")]
@@ -104,5 +108,5 @@ help:
     @echo "  docs-serve      - Serve the docs site locally"
     @echo "  docs-build      - Build (and link-check) the docs site"
     @echo "  docs-clean      - Clean the docs site build output"
-    @echo "  docs-pin x.x.x  - Point the docs site at a published theme version"
+    @echo "  docs-pin x.x.x  - Move the docs site's theme range to ^x.x.x"
     @echo "  release x.x.x   - Bump, tag, push, and publish to npm"

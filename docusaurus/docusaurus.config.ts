@@ -8,16 +8,18 @@ import {
 } from '@vantagecompute/docusaurus-theme';
 
 // This site is the theme's own documentation, and it dogfoods the theme: the
-// dependency in package.json is the PUBLISHED version from npm, not a file:
+// dependency in package.json is the PUBLISHED package from npm, not a file:
 // link to the repository root. That is deliberate. A file: link would render
 // the working tree, so the site would show a design nobody can install yet and
 // would never catch a packaging mistake -- a file the build needs that
 // `files` in package.json does not ship. Building against the tarball readers
 // actually get is the only way this site stays honest.
 //
-// The consequence to keep in mind: the site trails the theme by up to one
-// release. Bumping the pin is a deliberate step after a version is on npm --
-// `just docs-pin <version>` -- not something a release does on its own.
+// The range is `^0.4.7`, so the site follows the newest 0.4.x automatically and
+// a 0.5.0 needs a deliberate bump. Note that `npm ci` is lockfile-exact, so the
+// range on its own would not move: both workflows run
+// `npm update --no-save @vantagecompute/docusaurus-theme` after installing to
+// take the newest release in range without writing a lockfile diff.
 //
 // From the theme rather than hand-rolled here, so every Vantage site advertises
 // its version the same way. It returns `git describe --tags --always`, so the

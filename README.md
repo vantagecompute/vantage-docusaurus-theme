@@ -160,14 +160,15 @@ Full documentation is published as a spoke site on the Vantage docs hub:
 
 **https://docs.vantagecompute.ai/developer/docusaurus-theme/**
 
-It lives in `docusaurus/` in this repository and installs the theme from npm at
-a pinned version, so it renders what consumers actually get rather than the
-working tree.
+It lives in `docusaurus/` in this repository and installs the theme from npm, so
+it renders what consumers actually get rather than the working tree. The
+declared range is `^0.4.7`, so patch releases reach the site on the next deploy
+with no commit.
 
 ```bash
 just docs-serve         # local preview at /developer/docusaurus-theme/
 just docs-build         # build and link-check
-just docs-pin 0.4.8     # point the site at a newly published version
+just docs-pin 0.5.0     # move the range across a minor
 ```
 
 ## Development
@@ -187,7 +188,7 @@ The package uses TypeScript for the plugin entry point (`src/index.cts` -> `lib/
 just release 0.4.8
 ```
 
-Bumps `package.json`, commits, tags, pushes, and creates the GitHub release. The npm publish runs in CI on `release: published`, with provenance attestation. Afterwards, bump the docs site's pin with `just docs-pin`.
+Bumps `package.json`, commits, tags, pushes, and creates the GitHub release. The npm publish runs in CI on `release: published`, with provenance attestation. A patch release needs nothing else; a new minor needs `just docs-pin` for the docs site.
 
 ## License
 

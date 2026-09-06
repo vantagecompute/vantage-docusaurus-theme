@@ -30,23 +30,38 @@ site already installed rather than pulling in a second one. `@docusaurus/core`,
 
 The package itself depends only on `clsx` and `unist-util-visit`.
 
-## Pin the version
+## Declare the range
 
-Pin an exact version rather than a range:
+A caret range on the current minor:
 
 ```json
 {
   "dependencies": {
-    "@vantagecompute/docusaurus-theme": "0.4.7"
+    "@vantagecompute/docusaurus-theme": "^0.4.7"
   }
 }
 ```
 
-The theme changes how every page on the site looks. A caret range means a
-design change can land in a build nobody intended to change the design in,
-which is a bad way to find out about it. An exact pin makes the adoption a
-commit you can point at, and makes "which sites have this fix" a question
-`grep` answers.
+Below 1.0.0 npm reads a caret as "this minor only", so `^0.4.7` means
+`>=0.4.7 <0.5.0`. Patch releases within 0.4.x, which is where fixes land,
+arrive on their own. A 0.5.0 does not, so a release that changes the design
+deliberately stays a deliberate adoption in each site.
+
+:::caution `npm ci` will not move this on its own
+`npm ci` installs exactly what the lockfile says, by design, so a site whose CI
+uses it stays on whatever version the lockfile was last regenerated against
+however wide the range is. Either regenerate the lockfile when you want the
+newer theme, or refresh just this package after installing:
+
+```bash
+npm ci
+npm update --no-save @vantagecompute/docusaurus-theme
+```
+
+`--no-save` leaves the lockfile and `package.json` alone, so every other
+dependency stays reproducible and the build produces no diff. That is what this
+package's own documentation site does.
+:::
 
 ## What lands in `node_modules`
 

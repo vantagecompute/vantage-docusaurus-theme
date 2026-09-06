@@ -92,6 +92,16 @@ jobs:
         working-directory: docusaurus
         run: npm ci
 
+      # `npm ci` is lockfile-exact by design, so the caret range in package.json
+      # alone would never pick up a newer 0.4.x: the site would sit on whatever
+      # version the lockfile was last regenerated against. This pulls the newest
+      # release matching the declared range, and `--no-save` leaves both the
+      # lockfile and package.json untouched, so every other dependency stays
+      # reproducible and CI never produces a diff.
+      - name: Take the newest theme release in range
+        working-directory: docusaurus
+        run: npm update --no-save @vantagecompute/docusaurus-theme
+
       - name: Typecheck
         working-directory: docusaurus
         run: npm run typecheck

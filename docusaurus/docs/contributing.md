@@ -51,16 +51,20 @@ just docs-serve    # http://localhost:3000/developer/docusaurus-theme/
 just docs-build
 ```
 
-It installs the theme from npm at a pinned version rather than through a
-`file:` link to the repository around it. That is what makes the site an honest
-preview: it renders what consumers actually get, and it fails if a release ever
-ships a tarball missing something the build needs.
+It installs the theme from npm rather than through a `file:` link to the
+repository around it. That is what makes the site an honest preview: it renders
+what consumers actually get, and it fails if a release ever ships a tarball
+missing something the build needs.
 
-The pin therefore trails the package by up to one release, and moving it is a
-separate deliberate commit after the version is on npm:
+The declared range is `^0.4.7`, so a new 0.4.x patch reaches the site on the
+next deploy with no commit here. Both workflows run
+`npm update --no-save @vantagecompute/docusaurus-theme` after `npm ci`, because
+`npm ci` is lockfile-exact and the range on its own would never move.
+
+Moving to a new minor is deliberate:
 
 ```bash
-just docs-pin 0.4.8
+just docs-pin 0.5.0
 ```
 
 ## Releasing
@@ -81,8 +85,9 @@ Two details worth knowing:
 - The working tree must be clean; the recipe refuses to run otherwise, so a
   release can never contain something that was never committed.
 
-After the release lands on npm, bump this site's pin and, when the change
-matters to them, the pins in the consuming sites.
+A patch release needs nothing here: the site's range already covers it. A new
+minor needs `just docs-pin`, and the same bump in the consuming sites when the
+change matters to them.
 
 ## What belongs in the theme
 

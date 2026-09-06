@@ -56,13 +56,11 @@ styles and nothing else.
 
 ## This site dogfoods the theme
 
-The site you are reading installs `@vantagecompute/docusaurus-theme` from npm
-at a pinned version, exactly as any other consumer does, not through a
-`file:` link to the repository it lives in. So it renders the design that is
-actually published, and a packaging mistake (a file the build needs that
-`files` in `package.json` does not ship) fails this build before it reaches
-anybody else.
+The site you are reading installs `@vantagecompute/docusaurus-theme` from npm,
+exactly as any other consumer does, not through a `file:` link to the
+repository it lives in. So it renders the design that is actually published,
+and a packaging mistake (a file the build needs that `files` in `package.json`
+does not ship) fails this build before it reaches anybody else.
 
-The trade-off is that this site trails the package by up to one release.
-Bumping the pin is a deliberate step after a version is on npm, not something
-a release does on its own.
+It follows the `^0.4.7` range, so each deploy picks up the newest 0.4.x
+release. A new minor is a deliberate bump.

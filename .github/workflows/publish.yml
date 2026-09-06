@@ -11,6 +11,20 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+
+    # Job level, not step level. `registry-url` makes setup-node write an .npmrc
+    # containing the literal `${NODE_AUTH_TOKEN}`, and `cache: yarn` then shells
+    # out to yarn to locate the cache directory. Yarn 1 expands env vars in
+    # .npmrc eagerly and dies on an unset one, so with the token scoped to the
+    # publish step alone, setup-node itself failed:
+    #
+    #   error Failed to replace env in config: ${NODE_AUTH_TOKEN}
+    #
+    # The variable has to be in the environment from the moment the .npmrc
+    # exists, which means the whole job.
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -30,5 +44,3 @@ jobs:
 
       # Publish stays on the npm CLI: yarn 1 cannot emit provenance attestations.
       - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

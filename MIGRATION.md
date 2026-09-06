@@ -1,6 +1,15 @@
-# Migrating vantage-docs to @vantagecompute/docusaurus-theme
+# Migrating to @vantagecompute/docusaurus-theme
 
-This guide walks through migrating the `vantage-docs` project to use the shared theme package.
+Two migrations live here:
+
+- **[Part 1: adopting the theme](#part-1-adopting-the-theme)** walks the
+  `vantage-docs` project through its first move onto the shared package. Any
+  site not yet on the theme follows the same steps.
+- **[Part 2: adopting the shared brand mark](#part-2-adopting-the-shared-brand-mark-050)**
+  is for a site already on the theme that still carries its own copy of the
+  logo and its own navbar/footer logo config. Added in 0.5.0.
+
+## Part 1: adopting the theme
 
 ## Step 1: Install the package
 
@@ -54,7 +63,7 @@ Replace the 1,858-line `custom.css` with this slim version:
   display: none;
 }
 
-/* Chat sidebar — push main content when open */
+/* Chat sidebar - push main content when open */
 .main-wrapper {
   transition: margin-right 0.3s ease-in-out;
 }
@@ -130,3 +139,116 @@ Check that:
 - [x] Admonitions/callouts render with correct colors
 - [x] AI chat button still appears in navbar
 - [x] Chat side panel still opens
+
+---
+
+## Part 2: adopting the shared brand mark (0.5.0)
+
+For a site already using the theme that has its own
+`static/img/vantage-logo-color.svg` and hand-written navbar and footer logo
+blocks. After this, the mark and its wiring come from the package.
+
+### Step 1: Upgrade the package
+
+```bash
+npm install @vantagecompute/docusaurus-theme@^0.5.0
+```
+
+### Step 2: Delete your copy of the brand mark
+
+```
+static/img/vantage-logo-color.svg   <- delete
+```
+
+It is served from the package, provided `staticDir` is already in
+`staticDirectories`. If it is not, add it:
+
+```js
+staticDirectories: ['static', staticDir],
+```
+
+The path your config references does not change: it is still
+`img/vantage-logo-color.svg`, now resolved out of the package.
+
+### Step 3: Replace the two logo blocks with the exports
+
+```diff
+- import {staticDir, getProjectVersion} from '@vantagecompute/docusaurus-theme';
++ import {
++   staticDir,
++   getProjectVersion,
++   navbarLogo,
++   footerLogo,
++ } from '@vantagecompute/docusaurus-theme';
+
+  themeConfig: {
+    navbar: {
+      title: 'my-project',
+-     logo: {
+-       alt: 'Vantage Compute Logo',
+-       src: 'img/vantage-logo-color.svg',
+-       href: 'https://docs.vantagecompute.ai',
+-       target: '_self',
+-     },
++     logo: navbarLogo,
+      items: [/* ... */],
+    },
+    footer: {
+      style: 'dark',
+-     logo: {
+-       alt: 'Vantage Compute Logo',
+-       src: 'img/vantage-logo-color.svg',
+-       href: 'https://vantagecompute.ai',
+-     },
++     logo: footerLogo,
+      links: [/* ... */],
+    },
+  },
+```
+
+Also delete any `srcDark` still sitting on either logo. The colour mark is one
+asset for both colour modes; a second one is only a second thing to keep in
+sync.
+
+### Step 4: Keep the version out of the navbar title
+
+The version belongs in the tagline, where it does not resize the header on
+every release:
+
+```js
+const projectVersion = getProjectVersion();
+
+const config = {
+  title: 'my-project',
+  tagline: `What this project does (${projectVersion})`,
+  customFields: {projectVersion},
+  // ...
+};
+```
+
+`customFields.projectVersion` is what the theme's `Navbar/Logo` override reads
+to render the version badge beside the centered title. Set it; do not append
+the version to `navbar.title`.
+
+### Step 5: If your site has a reason to differ
+
+Spread to change one field, and omit `logo` to render none:
+
+```js
+logo: {...navbarLogo, href: 'https://docs.vantagecompute.ai/developer/'},
+```
+
+Spread rather than mutate: the exported objects are shared by every importer.
+
+### Step 6: Verify
+
+```bash
+npm run build
+npm run serve
+```
+
+- [ ] The colour mark renders in the navbar and in the footer
+- [ ] It reads correctly in both light and dark mode
+- [ ] The navbar mark links to `https://docs.vantagecompute.ai` in the same tab
+- [ ] The footer mark links to `https://vantagecompute.ai`
+- [ ] No `static/img/vantage-logo-color.svg` remains in your repo

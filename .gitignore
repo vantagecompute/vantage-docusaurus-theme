@@ -1,3 +1,7 @@
 node_modules/
 lib/
 *.tgz
+
+# Docs site
+docusaurus/.docusaurus/
+docusaurus/build/

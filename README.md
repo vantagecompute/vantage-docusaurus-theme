@@ -91,8 +91,8 @@ Served from the package once `staticDir` is in your `staticDirectories`, so no s
 |---|---|
 | `ColorModeToggle` | Custom sun/moon SVG icon toggle |
 | `DocBreadcrumbs` | Full-path breadcrumb rendering |
+| `Navbar/Logo` | Centered site title with the version badge beside it |
 | `Tabs` | Bugfix for Docusaurus 3.10 whitespace crash |
-| `MDXComponents` | Global `Tabs`/`TabItem` registration |
 | `Navbar/MobileSidebar/SecondaryMenu` | Clean secondary menu render |
 
 ### Utilities
@@ -154,6 +154,22 @@ Override any design token in your custom CSS:
 }
 ```
 
+## Documentation
+
+Full documentation is published as a spoke site on the Vantage docs hub:
+
+**https://docs.vantagecompute.ai/developer/docusaurus-theme/**
+
+It lives in `docusaurus/` in this repository and installs the theme from npm at
+a pinned version, so it renders what consumers actually get rather than the
+working tree.
+
+```bash
+just docs-serve         # local preview at /developer/docusaurus-theme/
+just docs-build         # build and link-check
+just docs-pin 0.4.8     # point the site at a newly published version
+```
+
 ## Development
 
 ```bash
@@ -162,6 +178,16 @@ npm run build    # Compile TypeScript entry point
 ```
 
 The package uses TypeScript for the plugin entry point (`src/index.cts` -> `lib/index.cjs`). Theme components, CSS, and static assets are shipped as source and resolved by Docusaurus at build time.
+
+`tsconfig.json` deliberately excludes `src/theme`, `src/css` and `src/utils`: only the entry point is compiled here, and everything else is compiled by each consuming site's own toolchain.
+
+## Releasing
+
+```bash
+just release 0.4.8
+```
+
+Bumps `package.json`, commits, tags, pushes, and creates the GitHub release. The npm publish runs in CI on `release: published`, with provenance attestation. Afterwards, bump the docs site's pin with `just docs-pin`.
 
 ## License
 

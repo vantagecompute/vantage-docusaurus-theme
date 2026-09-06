@@ -1,0 +1,22 @@
+{
+  // Hand-rolled rather than `extends: "@docusaurus/tsconfig"`. That base config
+  // still sets `baseUrl`, which TypeScript 7 removed, so extending it fails
+  // before it compiles anything. The options below are the same ones it set,
+  // with `paths` written relative to this file, which is what `baseUrl: "."`
+  // meant.
+  "compilerOptions": {
+    "allowJs": true,
+    "esModuleInterop": true,
+    "jsx": "preserve",
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "moduleResolution": "bundler",
+    "module": "esnext",
+    "noEmit": true,
+    "paths": {
+      "@site/*": ["./*"]
+    },
+    "skipLibCheck": true
+  },
+  "exclude": [".docusaurus", "build"]
+}

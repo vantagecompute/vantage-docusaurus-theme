@@ -5,9 +5,9 @@ Two migrations live here:
 - **[Part 1: adopting the theme](#part-1-adopting-the-theme)** walks the
   `vantage-docs` project through its first move onto the shared package. Any
   site not yet on the theme follows the same steps.
-- **[Part 2: adopting the shared brand mark](#part-2-adopting-the-shared-brand-mark-050)**
+- **[Part 2: adopting the shared brand mark](#part-2-adopting-the-shared-brand-mark-047)**
   is for a site already on the theme that still carries its own copy of the
-  logo and its own navbar/footer logo config. Added in 0.5.0.
+  logo and its own navbar/footer logo config. Added in 0.4.7.
 
 ## Part 1: adopting the theme
 
@@ -142,7 +142,7 @@ Check that:
 
 ---
 
-## Part 2: adopting the shared brand mark (0.5.0)
+## Part 2: adopting the shared brand mark (0.4.7)
 
 For a site already using the theme that has its own
 `static/img/vantage-logo-color.svg` and hand-written navbar and footer logo
@@ -151,7 +151,7 @@ blocks. After this, the mark and its wiring come from the package.
 ### Step 1: Upgrade the package
 
 ```bash
-npm install @vantagecompute/docusaurus-theme@^0.5.0
+npm install @vantagecompute/docusaurus-theme@0.4.7
 ```
 
 ### Step 2: Delete your copy of the brand mark

@@ -1,0 +1,26 @@
+/**
+ * Project-specific CSS for this site only.
+ *
+ * The Vantage design system is NOT here: @vantagecompute/docusaurus-theme
+ * injects it as a client module, so anything below layers on top of it. Keep
+ * this file small -- a rule that every Vantage site would want belongs in the
+ * theme's own src/css/custom.css instead, where every site gets it at once.
+ */
+
+/* The docs use `routeBasePath: '/'`, so DocItem renders the page title as an h1
+ * and the markdown then repeats it. Hide the duplicate, matching the hub. */
+.theme-doc-markdown > article > h1:first-of-type {
+  display: none;
+}
+
+/* Colour swatches on the design-tokens page. A token is easier to check
+ * against a rendered chip than against a hex string. */
+.token-swatch {
+  display: inline-block;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-right: 0.5rem;
+  vertical-align: -0.2rem;
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 4px;
+}

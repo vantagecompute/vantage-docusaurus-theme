@@ -1,0 +1,136 @@
+# Deploy this package's documentation as a spoke site under
+# /developer/docusaurus-theme/ on docs.vantagecompute.ai (S3 + CloudFront).
+#
+# Auth is handled at the edge by the Lambda@Edge Keycloak gateway on all of
+# /developer/*, so there is no per-spoke auth configuration here and the site
+# carries no login of its own.
+#
+# Required repo variables:
+#   DOCS_BUCKET               S3 bucket name (shared with vantage-docs)
+#   DOCS_CF_DISTRIBUTION_ID   CloudFront distribution ID
+#
+# Required repo secrets:
+#   DOCS_SPOKE_ROLE_ARN       vantage-docs-spoke-docusaurus-theme, scoped to
+#                             developer/docusaurus-theme/*. Created by the
+#                             vantage-docs hub stack from its own spokes list,
+#                             so there is no infrastructure to deploy from here
+#                             -- adding this repo to that list is what brings
+#                             the role into existence.
+
+name: Deploy docs (spoke)
+
+on:
+  # The docs live in this repository and are not generated from a release
+  # artifact, so main is the source of truth for them: a wording fix should not
+  # have to wait for the next version bump. The tag trigger is still here
+  # because `getProjectVersion()` reads `git describe`, so a release changes
+  # what the navbar badge says even when no page did.
+  push:
+    branches: [main]
+    paths:
+      - 'docusaurus/**'
+      - '.github/workflows/deploy-docs.yml'
+    tags:
+      # Only a plain vX.Y.Z release republishes. `v*` also matched a
+      # pre-release like v1.2.3rc1 and anything else beginning with v. GitHub
+      # filter patterns are glob-like rather than regular expressions: `.` is
+      # literal and `+` means one or more of the preceding character, so this
+      # matches v1.2.3 and v10.20.30 and rejects v1.2.3rc1, v1.2 and vfoo.
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: docs-spoke
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # fetch-depth: 0 rather than the default 1. The site's version badge comes
+      # from `getProjectVersion()`, which shells out to `git describe --tags`;
+      # a shallow checkout carries no tags, so the badge would read as a bare
+      # commit hash on every deploy.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: docusaurus/package-lock.json
+
+      - name: Install docs dependencies
+        working-directory: docusaurus
+        run: npm ci
+
+      - name: Typecheck
+        working-directory: docusaurus
+        run: npm run typecheck
+
+      - name: Build docs
+        working-directory: docusaurus
+        run: npm run build
+
+      # The site installs @vantagecompute/docusaurus-theme from npm rather than
+      # from the working tree, so the build above already proves the published
+      # tarball is usable. What it does not prove is that the tarball still
+      # ships static/: a missing asset directory produces a site that builds
+      # clean and renders in the wrong typeface. Check for the assets the design
+      # system references rather than trusting the exit code.
+      - name: Verify the published package still ships its assets
+        working-directory: docusaurus
+        run: |
+          set -euo pipefail
+          pkg=node_modules/@vantagecompute/docusaurus-theme
+          missing=0
+          for asset in \
+            static/fonts/Satoshi-Regular.woff \
+            static/img/vantage-logo-color.svg \
+            static/img/favicon.ico \
+            src/css/custom.css \
+            lib/index.cjs
+          do
+            if [ ! -f "$pkg/$asset" ]; then
+              echo "missing from the published package: $asset"
+              missing=1
+            fi
+          done
+
+          if [ "$missing" -ne 0 ]; then
+            echo "Likely cause: a file was added outside the directories listed"
+            echo "in \`files\` in package.json, so it never reached the tarball."
+            exit 1
+          fi
+
+          echo "Published package assets OK"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
+        with:
+          role-to-assume: ${{ secrets.DOCS_SPOKE_ROLE_ARN }}
+          aws-region: us-east-1
+
+      # --delete is safe here and only here: the hub excludes every spoke listed
+      # in .developer-subsites from its own sync, so this subtree is owned by
+      # this repo alone.
+      - name: Sync to S3
+        run: |
+          aws s3 sync docusaurus/build/ "s3://${{ vars.DOCS_BUCKET }}/developer/docusaurus-theme/" --delete
+
+      - name: Invalidate CloudFront
+        env:
+          DOCS_CF_DISTRIBUTION_ID: ${{ vars.DOCS_CF_DISTRIBUTION_ID }}
+        run: |
+          if [ -z "${DOCS_CF_DISTRIBUTION_ID}" ]; then
+            echo "DOCS_CF_DISTRIBUTION_ID is not set; skipping CloudFront invalidation."
+            exit 0
+          fi
+          aws cloudfront create-invalidation \
+            --distribution-id "${DOCS_CF_DISTRIBUTION_ID}" \
+            --paths "/developer/docusaurus-theme/*"

@@ -1,0 +1,103 @@
+# Build both halves of the repository on every pull request and on main.
+#
+# The two jobs are separate because they install differently and fail for
+# different reasons: the package builds under yarn from the root lockfile, the
+# documentation site builds under npm from its own. Splitting them means a
+# broken docs build never hides a broken package build.
+
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: build package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: yarn
+          cache-dependency-path: yarn.lock
+
+      - name: Enable corepack
+        run: corepack enable
+
+      - run: yarn install --frozen-lockfile
+
+      - run: yarn build
+
+      # `files` in package.json decides what reaches consumers, and it is the
+      # one thing a successful `tsc` says nothing about. Pack the tarball and
+      # assert the assets the design system references are inside it, so a file
+      # added outside lib/, src/ or static/ fails here rather than in a
+      # consumer's site.
+      - name: Verify the tarball ships its assets
+        run: |
+          set -euo pipefail
+          contents=$(npm pack --dry-run --json | tr -d ' ')
+          missing=0
+          for asset in \
+            lib/index.cjs \
+            lib/index.d.cts \
+            src/css/custom.css \
+            src/utils/rehypeTabsTransform.js \
+            static/fonts/Satoshi-Regular.woff \
+            static/img/vantage-logo-color.svg \
+            static/img/favicon.ico
+          do
+            if ! grep -q "\"$asset\"" <<<"$contents"; then
+              echo "not in the tarball: $asset"
+              missing=1
+            fi
+          done
+
+          if [ "$missing" -ne 0 ]; then
+            echo "Likely cause: a file was added outside the directories listed"
+            echo "in \`files\` in package.json."
+            exit 1
+          fi
+
+          echo "Tarball contents OK"
+
+  docs:
+    name: build docs
+    runs-on: ubuntu-latest
+    steps:
+      # fetch-depth: 0 for the same reason the deploy workflow needs it: the
+      # version badge comes from `git describe --tags`.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: docusaurus/package-lock.json
+
+      - name: Install docs dependencies
+        working-directory: docusaurus
+        run: npm ci
+
+      - name: Typecheck
+        working-directory: docusaurus
+        run: npm run typecheck
+
+      # `onBrokenLinks: 'throw'` means this also checks every internal link on
+      # the site.
+      - name: Build docs
+        working-directory: docusaurus
+        run: npm run build

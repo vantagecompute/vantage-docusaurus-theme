@@ -441,7 +441,11 @@ article table td code {
 }
 
 .markdown li::marker {
-  color: var(--ink-300);
+  /* ink-300 was 2.5:1 against the page in both modes. ink-400 is the ramp's
+     fixed point (#6b7494 in both modes) and clears the 3:1 non-text floor:
+     4.6:1 light, 4.1:1 dark. It stays decoration-only; see the note on
+     .sidebar-section-label for why it is not used for text. */
+  color: var(--ink-400);
 }
 
 /* Tab lists should have no left padding (override .markdown ul) */
@@ -645,7 +649,7 @@ html[data-theme='dark'] .provider-showcase-item {
 .guide-meta-label {
   display: block;
   margin-bottom: 0.25rem;
-  color: var(--ink-400);
+  color: var(--ink-500);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -1029,7 +1033,7 @@ html[data-theme='dark'] .provider-showcase-item {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--ink-400);
+  color: var(--ink-500);
   margin-bottom: 10px;
   content: 'On this page';
 }
@@ -1085,7 +1089,7 @@ html[data-theme='dark'] .provider-showcase-item {
 }
 
 .breadcrumbs__link {
-  color: var(--ink-400);
+  color: var(--ink-500);
   font-weight: 500;
   border-bottom: 0 !important;
 }
@@ -1210,7 +1214,7 @@ a.button--secondary:focus {
 }
 
 .pagination-nav__sublabel {
-  color: var(--ink-400);
+  color: var(--ink-500);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -1378,7 +1382,7 @@ details summary[onclick]:hover {
   --docsearch-spacing:                12px;
   --docsearch-icon-stroke-width:      1.4;
   --docsearch-highlight-color:        var(--iris-700);
-  --docsearch-muted-color:            var(--ink-400);
+  --docsearch-muted-color:            var(--ink-500);
   /* Backdrop */
   --docsearch-container-background:   rgba(11, 16, 32, 0.48);
   /* Modal */
@@ -1407,7 +1411,7 @@ details summary[onclick]:hover {
   --docsearch-primary-color:          #818cf8;
   --docsearch-text-color:             var(--ink-700);
   --docsearch-highlight-color:        #818cf8;
-  --docsearch-muted-color:            var(--ink-400);
+  --docsearch-muted-color:            var(--ink-500);
   /* Backdrop */
   --docsearch-container-background:   rgba(0, 0, 0, 0.65);
   /* Modal */
@@ -1501,7 +1505,8 @@ button.DocSearch-Button {
 .DocSearch-Button-Key {
   background: transparent !important;
   box-shadow: none !important;
-  color: rgba(255, 255, 255, 0.7) !important;
+  /* .7 measured 3.91:1 on the keys' doubly tinted background; .85 is 5.1:1. */
+  color: rgba(255, 255, 255, 0.85) !important;
   font-family: var(--ifm-font-family-monospace) !important;
   font-size: 10px !important;
   font-weight: 500 !important;
@@ -1558,7 +1563,8 @@ button.DocSearch-Button {
 }
 
 [data-theme='dark'] .DocSearch-Button-Key {
-  color: rgba(255, 255, 255, 0.7) !important;
+  /* Same 3.91:1 to 5.1:1 lift as the light rule above. */
+  color: rgba(255, 255, 255, 0.85) !important;
 }
 
 /* ── Search modal ───────────────────────────────────────────────────── */
@@ -1583,7 +1589,7 @@ button.DocSearch-Button {
 }
 
 [data-theme='dark'] .DocSearch-Hit-source {
-  color: #6b7494 !important;
+  color: var(--ink-500) !important;
 }
 
 .DocSearch-Form {
@@ -1733,7 +1739,7 @@ button.DocSearch-Button {
   box-shadow: none !important;
   border: 1px solid var(--ink-300) !important;
   border-radius: 4px !important;
-  color: var(--ink-400) !important;
+  color: var(--ink-500) !important;
   font-family: var(--ifm-font-family-monospace) !important;
   font-size: 10px !important;
   padding: 2px 5px !important;
@@ -1744,12 +1750,12 @@ button.DocSearch-Button {
 
 [data-theme='dark'] .DocSearch-Commands-Key {
   border-color: #2a3157 !important;
-  color: #6b7494 !important;
+  color: var(--ink-500) !important;
 }
 
 .DocSearch-Label {
   font-size: 11px !important;
-  color: var(--ink-400) !important;
+  color: var(--ink-500) !important;
 }
 
 /* Empty / no results state */
@@ -1846,12 +1852,18 @@ article {
 *::-webkit-scrollbar-thumb:hover { background: var(--ink-300); }
 
 /* ── Sidebar section labels (Products / Platform / Reference / About) ─ */
+/* ink-500, not ink-400, for every muted label in the theme. ink-400 is the
+   ramp's fixed point, #6b7494 in both modes, and as text it measures 4.46:1
+   on the light page, 4.24:1 on a light ink-50 surface and 3.68 to 4.10:1
+   everywhere in dark, all under the 4.5:1 floor. ink-500 is mirrored
+   (#4a5375 light, #9aa1bd dark) and clears 6.6:1 on every surface it is
+   used on. ink-400 stays for decoration only: markers, separators, chevrons. */
 .sidebar-section-label {
   font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--ink-400);
+  color: var(--ink-500);
   padding: 14px 0 6px;
   margin-top: 8px;
   border-top: 1px solid var(--ink-100);
@@ -1863,7 +1875,7 @@ article {
   padding: 10px 0 4px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--ink-400);
+  color: var(--ink-500);
   text-align: left;
 }
 .menu > .menu__list > li:first-child .sidebar-section-label,

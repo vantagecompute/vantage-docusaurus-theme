@@ -18,12 +18,21 @@ A slate-blue neutral rather than a pure grey. Light mode:
 | `--ink-900` | `#0b1020` | Headings, code block background |
 | `--ink-700` | `#1f2547` | Body text |
 | `--ink-500` | `#4a5375` | Secondary text, sidebar and TOC links |
-| `--ink-400` | `#6b7494` | Muted text |
+| `--ink-400` | `#6b7494` | Decoration only: list markers, separators, chevrons. Never text (see below) |
 | `--ink-300` | `#9aa1bd` | Disabled text, placeholders |
 | `--ink-200` | `#c8cce0` | Strong borders |
 | `--ink-100` | `#e6e8f2` | Borders, rules, TOC border |
 | `--ink-50` | `#f4f5fb` | Inline code background, hover fills |
 | `--paper` | `#fbfbfd` | Page background |
+
+`--ink-400` is the one step that is not mirrored: it is `#6b7494` in both
+modes, the ramp's fixed point. As text it measures 4.46:1 on the light page,
+4.24:1 on a light `--ink-50` surface and 3.68 to 4.10:1 on every dark surface,
+all under the 4.5:1 floor for text. Use `--ink-500` for muted text: it is
+mirrored (`#4a5375` light, `#9aa1bd` dark) and clears 6.6:1 everywhere. Keep
+`--ink-400` for things that are not read: list markers, breadcrumb separators,
+chevrons, where the 3:1 non-text floor is what applies and it passes (4.6:1
+light, 4.1:1 dark).
 
 ## Iris: the accent scale
 

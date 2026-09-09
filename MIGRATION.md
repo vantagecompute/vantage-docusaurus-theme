@@ -8,6 +8,8 @@ Two migrations live here:
 - **[Part 2: adopting the shared brand mark](#part-2-adopting-the-shared-brand-mark-047)**
   is for a site already on the theme that still carries its own copy of the
   logo and its own navbar/footer logo config. Added in 0.4.7.
+- **[Part 3: small screens](#part-3-small-screens-049)** is for a site that
+  papered over the theme's phone and tablet defects itself. Added in 0.4.9.
 
 ## Part 1: adopting the theme
 
@@ -252,3 +254,66 @@ npm run serve
 - [ ] The navbar mark links to `https://docs.vantagecompute.ai` in the same tab
 - [ ] The footer mark links to `https://vantagecompute.ai`
 - [ ] No `static/img/vantage-logo-color.svg` remains in your repo
+
+## Part 3: small screens (0.4.9)
+
+0.4.9 makes the theme behave on phones and tablets: the search control is a
+bare icon below 1200px, the logo is never hidden, markdown tables scroll,
+tab strips wrap, the 997 to 1199 band drops the right-hand TOC for the
+collapsible one, touch targets are 44px, and every muted label moved from
+`--ink-400` to `--ink-500` for contrast. A site that fixed any of this itself
+now has two copies of the fix, and one of them is wrong.
+
+### Step 1: Upgrade the package
+
+```bash
+npm install @vantagecompute/docusaurus-theme@^0.4.9
+```
+
+### Step 2: Delete your own table wrapper
+
+The theme now routes every markdown `table` through a scroll region from its
+own `src/theme/MDXComponents`. A site that did the same wraps every table
+twice. Delete the site's `src/theme/MDXComponents` (or its `table` entry) and
+the component it pointed at.
+
+### Step 3: Delete the overrides the theme now carries
+
+Search `src/css/custom.css` for rules that touch any of these and remove them;
+the theme's own version is what you want:
+
+- `.DocSearch-Button` below 1200, and `[class*="navbarSearchContainer"]`
+- `.navbar__logo` visibility at small widths
+- `.navbar__center-title` when there is no title
+- `[data-navbar-ask-ai]` visibility and size
+- `.markdown table` display, overflow, border and radius
+- `.markdown .tabs` wrapping
+- `.pagination-nav` columns below 600
+- `--ifm-navbar-sidebar-width`
+- `.navbar__toggle`, `.navbar-sidebar__close`, `.menu__link`, `.menu__caret`,
+  `.breadcrumbs__link`, `.theme-doc-toc-mobile` sizing below 997
+- `--doc-sidebar-width`, `.col--3:has(.theme-doc-toc-desktop)`,
+  `.theme-doc-toc-mobile` between 997 and 1199
+- `.DocSearch-Modal`, `.DocSearch-Input`, `.DocSearch-Close` below 768
+- `h2` and `h3` margins below 600
+- `body.chat-open` (removed from the theme; it was dead)
+
+### Step 4: Check your own muted text
+
+If the site sets `color: var(--ink-400)` on anything a reader is meant to
+read, change it to `--ink-500`. The token page explains the numbers.
+
+### Step 5: Verify
+
+```bash
+npm run build
+npm run serve
+```
+
+At 375, 768 and 1024 wide:
+
+- [ ] No horizontal scroll on any page
+- [ ] The navbar shows the logo, a magnifying glass and (if the site has one) the Ask AI sparkle, all the same size
+- [ ] A wide reference table scrolls inside its frame rather than squeezing
+- [ ] Every tab in a tab strip is visible
+- [ ] At 1024 the article has no right-hand TOC column and shows the "On this page" collapsible instead

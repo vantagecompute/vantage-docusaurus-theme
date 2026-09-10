@@ -1,6 +1,6 @@
 # Migrating to @vantagecompute/docusaurus-theme
 
-Two migrations live here:
+Four migrations live here:
 
 - **[Part 1: adopting the theme](#part-1-adopting-the-theme)** walks the
   `vantage-docs` project through its first move onto the shared package. Any
@@ -10,6 +10,9 @@ Two migrations live here:
   logo and its own navbar/footer logo config. Added in 0.4.7.
 - **[Part 3: small screens](#part-3-small-screens-049)** is for a site that
   papered over the theme's phone and tablet defects itself. Added in 0.4.9.
+- **[Part 4: the theme-owned navbar](#part-4-the-theme-owned-navbar-050)**
+  is for a site on 0.4.x that declares its own `themeConfig.navbar` or
+  `footer`. Added in 0.5.0.
 
 ## Part 1: adopting the theme
 
@@ -317,3 +320,73 @@ At 375, 768 and 1024 wide:
 - [ ] A wide reference table scrolls inside its frame rather than squeezing
 - [ ] Every tab in a tab strip is visible
 - [ ] At 1024 the article has no right-hand TOC column and shows the "On this page" collapsible instead
+
+## Part 4: the theme-owned navbar (0.5.0)
+
+From 0.5.0 the theme renders the navbar itself and renders no footer. A site's
+`themeConfig.navbar` and `themeConfig.footer` are ignored, and the
+`navbarLogo`, `footerLogo` and `ThemeLogo` exports are gone. This is the
+breaking change behind the minor bump.
+
+### Step 1: Upgrade the package
+
+```bash
+npm install @vantagecompute/docusaurus-theme@^0.5.0
+```
+
+### Step 2: Move your external buttons to the theme option
+
+```diff
+- themes: ['@docusaurus/theme-mermaid', '@vantagecompute/docusaurus-theme'],
++ themes: [
++   '@docusaurus/theme-mermaid',
++   ['@vantagecompute/docusaurus-theme', {
++     navbarLinks: [
++       {label: 'GitHub', url: 'https://github.com/vantagecompute/my-project'},
++       {label: 'PyPI', url: 'https://pypi.org/project/my-project/'},
++     ],
++   }],
++ ],
+```
+
+Two at most, `label` and `url` only. Anything else in your old `items` (doc
+links, dropdowns, a search item) has no equivalent; the developer navbar does
+not carry them, by design.
+
+### Step 3: Delete the navbar and footer blocks
+
+```diff
+- const {staticDir, navbarLogo, footerLogo, getProjectVersion} = require('@vantagecompute/docusaurus-theme');
++ const {staticDir, getProjectVersion} = require('@vantagecompute/docusaurus-theme');
+
+  themeConfig: {
+-   navbar: {
+-     title: 'my-project',
+-     logo: navbarLogo,
+-     items: [...],
+-   },
+-   footer: {...},
+    prism: {...},
+  },
+```
+
+The centred title now comes from `siteConfig.title`, so make sure that is the
+name you want beside the version badge. The version badge still reads
+`customFields.projectVersion`.
+
+### Step 4: Delete any local navbar swizzle
+
+If your `src/theme/` has `Navbar/Content`, `Navbar/Logo`,
+`Navbar/MobileSidebar/PrimaryMenu` or `Footer`, delete them; a local copy
+silently wins over the theme's.
+
+### Step 5: Verify
+
+```bash
+npm run build
+```
+
+Then open the site: the brand mark links to `/developer/` (or the docs root
+on the main site), your buttons open in a new tab with the external-link icon,
+and there is no footer. A misconfigured `navbarLinks` fails the build with a
+message naming the entry.

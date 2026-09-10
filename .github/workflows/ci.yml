@@ -39,6 +39,10 @@ jobs:
 
       - run: yarn build
 
+      # The option validator is tested against lib/, the compiled output
+      # consumers get, so this has to follow the build.
+      - run: yarn test
+
       # `files` in package.json decides what reaches consumers, and it is the
       # one thing a successful `tsc` says nothing about. Pack the tarball and
       # assert the assets the design system references are inside it, so a file
@@ -52,6 +56,7 @@ jobs:
           for asset in \
             lib/index.cjs \
             lib/index.d.cts \
+            lib/options.cjs \
             src/css/custom.css \
             src/utils/rehypeTabsTransform.js \
             static/fonts/Satoshi-Regular.woff \

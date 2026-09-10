@@ -1,36 +1,39 @@
 import React from 'react';
-// Must be @theme-init, NOT @theme-original. This component ships inside a
-// theme package that sits in the theme stack, so @theme-original/Navbar/Logo
-// resolves back to this same component -- React SSR then recurses without
-// bound and exhausts the heap during static site generation. @theme-init is
-// the alias for a theme wrapping the implementation below it in the stack.
-import Logo from '@theme-init/Navbar/Logo';
-import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import {useVantageNavbar} from '../useVantageNavbar';
+
+// The one colour mark reads on both colour modes, so there is no srcDark and
+// no second asset to keep in sync. Resolves through staticDir, which every
+// Vantage site lists in staticDirectories.
+const LOGO_SRC = 'img/vantage-logo-color.svg';
 
 /**
- * Brand logo on the left, plus a centered title with the project version
- * immediately to its right.
+ * The brand link, the centred title and the version badge.
  *
- * The title cannot just be centered in place: theme-classic renders it inside
- * the brand <a>, beside the logo, so centering it would drag the logo along.
- * Instead the in-brand title is hidden by CSS and re-rendered here as its own
- * absolutely-centered element, which lets the version badge sit next to it.
+ * Replaces theme-classic's Logo outright instead of wrapping it, because the
+ * href is not the site's to choose: the theme bakes it per variant (the docs
+ * root for the public navbar, the developer overview for the developer one).
+ * A plain anchor rather than @docusaurus/Link because the jump crosses SPA
+ * boundaries and should be a full navigation. Same tab: command-click covers
+ * "open in a new tab".
+ *
+ * The markup mirrors theme-classic's (navbar__brand > navbar__logo > img,
+ * plus b.navbar__title) so Infima's and this theme's CSS keep applying. On
+ * desktop the in-brand title is hidden by CSS and re-rendered centred below,
+ * which is what lets the version badge sit beside it.
  */
-export default function LogoWrapper(props) {
-  const {siteConfig} = useDocusaurusContext();
-
-  const raw = siteConfig.customFields?.projectVersion;
-  const version = raw
-    ? String(raw).startsWith('v')
-      ? String(raw)
-      : `v${raw}`
-    : null;
-
-  const title = siteConfig.themeConfig?.navbar?.title;
+export default function NavbarLogo() {
+  const {logoHref, title, version} = useVantageNavbar();
+  const src = useBaseUrl(LOGO_SRC);
 
   return (
     <>
-      <Logo {...props} />
+      <a className="navbar__brand" href={logoHref}>
+        <div className="navbar__logo">
+          <img src={src} alt="Vantage Compute Logo" />
+        </div>
+        {title && <b className="navbar__title text--truncate">{title}</b>}
+      </a>
       {(title || version) && (
         <div className="navbar__center-title">
           {title && <span className="navbar__center-title-text">{title}</span>}

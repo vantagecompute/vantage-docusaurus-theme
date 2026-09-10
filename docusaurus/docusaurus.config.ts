@@ -1,11 +1,6 @@
 import type {Config} from '@docusaurus/types';
 import {themes as prismThemes} from 'prism-react-renderer';
-import {
-  staticDir,
-  navbarLogo,
-  footerLogo,
-  getProjectVersion,
-} from '@vantagecompute/docusaurus-theme';
+import {staticDir, getProjectVersion} from '@vantagecompute/docusaurus-theme';
 
 // This site is the theme's own documentation, and it dogfoods the theme: the
 // dependency in package.json is the PUBLISHED package from npm, not a file:
@@ -59,7 +54,22 @@ const config: Config = {
     hooks: {onBrokenMarkdownLinks: 'warn'},
   },
 
-  themes: ['@docusaurus/theme-mermaid', '@vantagecompute/docusaurus-theme'],
+  // This site is a developer spoke (baseUrl under /developer/), so the theme
+  // renders its developer navbar: brand mark, centred title and version, and
+  // these two buttons. There is no themeConfig.navbar and no footer; both are
+  // the theme's, not the site's. See docs/reference/exports.md.
+  themes: [
+    '@docusaurus/theme-mermaid',
+    [
+      '@vantagecompute/docusaurus-theme',
+      {
+        navbarLinks: [
+          {label: 'GitHub', url: 'https://github.com/vantagecompute/vantage-docusaurus-theme'},
+          {label: 'npm', url: 'https://www.npmjs.com/package/@vantagecompute/docusaurus-theme'},
+        ],
+      },
+    ],
+  ],
 
   // `staticDir` serves the theme's own fonts, icons, brand mark and favicon.
   // This site needs it for the same reason every other Vantage site does, and
@@ -118,64 +128,6 @@ const config: Config = {
   customFields: {projectVersion},
 
   themeConfig: {
-    navbar: {
-      title: 'docusaurus-theme',
-      logo: navbarLogo,
-      items: [
-        {type: 'docSidebar', sidebarId: 'docsSidebar', position: 'left', label: 'Docs'},
-        {to: '/reference/exports', label: 'API', position: 'left'},
-        {
-          href: 'https://www.npmjs.com/package/@vantagecompute/docusaurus-theme',
-          label: 'npm',
-          position: 'right',
-        },
-        {
-          href: 'https://github.com/vantagecompute/vantage-docusaurus-theme',
-          label: 'GitHub',
-          position: 'right',
-          className: 'github-button',
-        },
-      ],
-    },
-    footer: {
-      style: 'dark',
-      logo: footerLogo,
-      links: [
-        {
-          title: 'Documentation',
-          items: [
-            {label: 'Overview', to: '/'},
-            {label: 'Installation', to: '/installation'},
-            {label: 'Usage', to: '/usage'},
-            {label: 'Migration', to: '/migration'},
-          ],
-        },
-        {
-          title: 'Reference',
-          items: [
-            {label: 'Exports', to: '/reference/exports'},
-            {label: 'Components', to: '/reference/components'},
-            {label: 'Assets', to: '/reference/assets'},
-            {label: 'Design tokens', to: '/design-system/tokens'},
-          ],
-        },
-        {
-          title: 'More',
-          items: [
-            {
-              label: 'GitHub',
-              href: 'https://github.com/vantagecompute/vantage-docusaurus-theme',
-            },
-            {
-              label: 'npm',
-              href: 'https://www.npmjs.com/package/@vantagecompute/docusaurus-theme',
-            },
-            {label: 'Vantage Compute', href: 'https://vantagecompute.ai'},
-          ],
-        },
-      ],
-      copyright: `Copyright © ${new Date().getFullYear()} Vantage Compute.`,
-    },
     codeBlock: {showCopyButton: true},
     prism: {
       theme: prismThemes.vsLight,

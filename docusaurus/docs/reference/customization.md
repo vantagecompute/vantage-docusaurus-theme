@@ -64,18 +64,46 @@ whatever it wraps, so it is the thing most likely to break on a Docusaurus
 upgrade, and the thing most likely to silently keep working while looking
 wrong.
 
-## Overriding the logos
+## Adding navbar buttons
 
-`navbarLogo` and `footerLogo` are plain objects. Spread to change a field:
+The developer navbar takes up to two external buttons through the theme option:
 
 ```js
-navbar: {
-  logo: {...navbarLogo, href: 'https://docs.vantagecompute.ai/developer/'},
-},
+themes: [
+  ['@vantagecompute/docusaurus-theme', {
+    navbarLinks: [
+      {label: 'GitHub', url: 'https://github.com/vantagecompute/my-project'},
+      {label: 'PyPI', url: 'https://pypi.org/project/my-project/'},
+    ],
+  }],
+],
 ```
 
-Spread rather than mutate: the exported objects are shared by every importer in
-the process. Omit `logo` entirely to render none.
+That is the whole surface. The brand link, the title, the version badge and the
+toggle are the theme's; `themeConfig.navbar` is not read. If a project needs a
+third destination, put it in the docs, not the bar.
+
+## Adding a control to the public navbar
+
+The public navbar renders `@theme/Navbar/SiteActions`, which is empty. A site
+on the public variant overrides it:
+
+```
+your-docs-site/
+  src/
+    theme/
+      Navbar/
+        SiteActions/
+          index.js
+```
+
+```jsx
+import AskAIButton from '@site/src/components/AskAIButton';
+
+export default function NavbarSiteActions() {
+  return <AskAIButton />;
+}
+```
 
 ## Keeping the search styling
 

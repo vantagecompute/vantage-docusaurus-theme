@@ -39,7 +39,7 @@ come from Google Fonts instead, so they are not in the package.
 
 | File | Status |
 |---|---|
-| `img/vantage-logo-color.svg` | **Current.** What `navbarLogo` and `footerLogo` point at. |
+| `img/vantage-logo-color.svg` | **Current.** What the theme's brand link renders. |
 | `img/vantage-logo.svg` | Legacy monochrome mark, kept for the `vantage-docs` hub, which still references it. New sites should not use it. |
 
 The colour mark has no dark variant on purpose: it is drawn to read in both

@@ -1,0 +1,6 @@
+/* The mobile drawer header has its own toggle. */
+@media (max-width: 996px) {
+  .colorModeToggle {
+    display: none;
+  }
+}

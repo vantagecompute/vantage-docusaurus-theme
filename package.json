@@ -12,6 +12,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "test": "node --test 'test/**/*.test.cjs'",
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {

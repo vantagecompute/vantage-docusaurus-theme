@@ -11,7 +11,12 @@ export function useVantageNavbar() {
   const {siteConfig} = useDocusaurusContext();
   const {variant, logoHref, navbarLinks} = usePluginData('@vantagecompute/docusaurus-theme');
 
-  const raw = siteConfig.customFields?.projectVersion;
+  // The developer navbar names the project beside its version, which is how
+  // a reader confirms they are on the version they think they are. The public
+  // navbar is logo-only: no title and no version badge, even when the site
+  // sets customFields.projectVersion.
+  const developer = variant === 'developer';
+  const raw = developer ? siteConfig.customFields?.projectVersion : null;
   const version = raw
     ? String(raw).startsWith('v')
       ? String(raw)
@@ -22,10 +27,7 @@ export function useVantageNavbar() {
     variant,
     logoHref,
     links: navbarLinks,
-    // The developer navbar names the project beside its version, which is
-    // how a reader confirms they are on the version they think they are.
-    // The public navbar is logo-only.
-    title: variant === 'developer' ? siteConfig.title : null,
+    title: developer ? siteConfig.title : null,
     version,
   };
 }

@@ -2015,15 +2015,6 @@ article {
   }
 }
 
-/* A site with no navbar.title still gets the version badge, alone in the
-   centre. Between 997 and 1024 that is a bare git hash beside the logo on a
-   tablet; hide it there. On wider screens the lone centred badge stays. */
-@media (max-width: 1024px) {
-  .navbar__center-title:not(:has(.navbar__center-title-text)) {
-    display: none;
-  }
-}
-
 /* ── Tablet landscape (997 to 1199) ────────────────────────────────── */
 /* Docusaurus treats this band as desktop: a 300px sidebar, a right-hand TOC
    column and the article between them. At 1024 the article is 505px and the

@@ -17,11 +17,18 @@ export interface VantageThemeOptions {
   navbarLinks?: NavbarLink[];
 }
 
-/** Options after validation. `id` is Docusaurus's plugin-instance id, kept if it was given. */
+/**
+ * Options after validation. `id` is Docusaurus's plugin-instance id. When a
+ * plugin exports validateOptions, Docusaurus trusts the returned object to
+ * carry it (its own Joi path adds one), and names the plugin's generated data
+ * directory after it. Leaving it out crashes the build in path.join.
+ */
 export interface ResolvedVantageThemeOptions {
-  id?: string;
+  id: string;
   navbarLinks: NavbarLink[];
 }
+
+const DEFAULT_PLUGIN_ID = 'default';
 
 /** Two is GitHub plus one registry (PyPI, npm, ...). More than that is a nav, and navs drift. */
 export const MAX_NAVBAR_LINKS = 2;
@@ -95,13 +102,10 @@ function validateLink(value: unknown, index: number): NavbarLink {
  * Validate and normalise the theme options. Throws with a message that names
  * the offending key, so a misconfigured spoke fails its build instead of
  * quietly rendering something off-convention.
- *
- * `id` is let through: Docusaurus can hand a plugin its instance id inside
- * the options before validateOptions runs, and that is not the site's doing.
  */
 export function validateVantageThemeOptions(options: unknown): ResolvedVantageThemeOptions {
   if (options === undefined || options === null) {
-    return {navbarLinks: []};
+    return {id: DEFAULT_PLUGIN_ID, navbarLinks: []};
   }
   if (!isPlainObject(options)) {
     fail('theme options must be an object.');
@@ -116,10 +120,10 @@ export function validateVantageThemeOptions(options: unknown): ResolvedVantageTh
     );
   }
 
-  const resolved: ResolvedVantageThemeOptions = {navbarLinks: []};
-  if (typeof id === 'string') {
-    resolved.id = id;
-  }
+  const resolved: ResolvedVantageThemeOptions = {
+    id: typeof id === 'string' ? id : DEFAULT_PLUGIN_ID,
+    navbarLinks: [],
+  };
 
   if (navbarLinks === undefined) {
     return resolved;

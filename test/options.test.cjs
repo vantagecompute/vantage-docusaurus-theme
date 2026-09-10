@@ -14,16 +14,21 @@ const github = {label: 'GitHub', url: 'https://github.com/vantagecompute/vantage
 const pypi = {label: 'PyPI', url: 'https://pypi.org/project/vantage-mcp/'};
 const npm = {label: 'npm', url: 'https://www.npmjs.com/package/vantage-mcp'};
 
-test('no options at all resolves to no links', () => {
-  assert.deepEqual(validateVantageThemeOptions(undefined), {navbarLinks: []});
-  assert.deepEqual(validateVantageThemeOptions({}), {navbarLinks: []});
+// Docusaurus relies on validateOptions to return an `id`: its own Joi path
+// adds one, and the plugin's data directory is named after it. Without it the
+// build dies in path.join with "Received undefined".
+test('no options at all resolves to no links and the default id', () => {
+  assert.deepEqual(validateVantageThemeOptions(undefined), {id: 'default', navbarLinks: []});
+  assert.deepEqual(validateVantageThemeOptions({}), {id: 'default', navbarLinks: []});
 });
 
 test('one and two links pass through normalised', () => {
   assert.deepEqual(validateVantageThemeOptions({navbarLinks: [github]}), {
+    id: 'default',
     navbarLinks: [github],
   });
   assert.deepEqual(validateVantageThemeOptions({navbarLinks: [github, pypi]}), {
+    id: 'default',
     navbarLinks: [github, pypi],
   });
 });
@@ -83,9 +88,9 @@ test('options must be an object', () => {
   assert.throws(() => validateVantageThemeOptions('nope'), /object/);
 });
 
-test('the Docusaurus plugin id passes through untouched', () => {
-  assert.deepEqual(validateVantageThemeOptions({id: 'default', navbarLinks: [github]}), {
-    id: 'default',
+test('an explicit Docusaurus plugin id passes through untouched', () => {
+  assert.deepEqual(validateVantageThemeOptions({id: 'second', navbarLinks: [github]}), {
+    id: 'second',
     navbarLinks: [github],
   });
 });

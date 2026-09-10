@@ -6,16 +6,20 @@ sidebar_position: 2
 # Theme component overrides
 
 Adding the package to `themes` puts its `src/theme/` into the Docusaurus theme
-resolution stack. These five overrides then take effect on every site, with no
+resolution stack. These overrides then take effect on every site, with no
 per-site swizzling.
 
 | Component | What it changes |
 |---|---|
+| `Navbar/Content` | The whole navbar, in a public or a developer variant chosen from `baseUrl` (0.5.0) |
+| `Navbar/Logo` | The brand link with the variant's baked href, the centred title and the version badge |
+| `Navbar/MobileSidebar/PrimaryMenu` | The developer navbar's external buttons, in the mobile drawer (0.5.0) |
+| `Navbar/SiteActions` | An empty slot in the public navbar for a site's own controls (0.5.0) |
+| `Navbar/MobileSidebar/SecondaryMenu` | A clean secondary-menu render |
+| `Footer` | Renders nothing (0.5.0) |
 | `ColorModeToggle` | Sun and moon SVG icons in place of the default toggle |
 | `DocBreadcrumbs` | Full-path breadcrumbs instead of the truncated default |
-| `Navbar/Logo` | A centered site title with a version badge beside it |
 | `Tabs` | A workaround for a Docusaurus 3.10 crash |
-| `Navbar/MobileSidebar/SecondaryMenu` | A clean secondary-menu render |
 | `MDXComponents` | Every markdown `table` renders inside a horizontal scroll region (0.4.9) |
 
 ## `Tabs`: the one that is a bugfix
@@ -40,26 +44,47 @@ this crashes the build.
 Revisit the override when the upstream fix lands; until then, removing it
 reintroduces the crash.
 
-## `Navbar/Logo`: the centered title and version badge
+## `Navbar/Content`, `Navbar/Logo` and `Navbar/MobileSidebar/PrimaryMenu`: the theme-owned navbar
 
-Theme-classic renders the site title inside the brand anchor, beside the logo,
-so centering the title in place would drag the logo to the middle with it. The
-override instead hides the in-brand title with CSS and re-renders it as its own
-absolutely centered element, which is what lets the version badge sit next to
-it.
+theme-classic renders `themeConfig.navbar.items`. This theme does not read
+them. `Navbar/Content` renders one of two fixed layouts chosen from the site's
+`baseUrl` (see [Exports](./exports.md#which-navbar-a-site-gets)), `Navbar/Logo`
+renders the brand link with an href the site cannot change, and
+`PrimaryMenu` repeats the developer navbar's external buttons in the mobile
+drawer. The only input a site has is the `navbarLinks` option.
 
-It reads `siteConfig.customFields.projectVersion` and
-`siteConfig.themeConfig.navbar.title`. A missing version renders the title
-alone. A version without a leading `v` gets one added; a version that already
-has one is left as it is.
+`Navbar/Logo` reads `siteConfig.title` (developer variant only) and
+`siteConfig.customFields.projectVersion`. theme-classic renders the title inside
+the brand anchor, so the override hides it there with CSS and re-renders it as
+its own absolutely centred element, which is what lets the version badge sit
+next to it. A version without a leading `v` gets one added.
+
+The hamburger appears only on pages with a docs sidebar, and only once the
+page has hydrated: with no `themeConfig.navbar.items`, theme-common treats the
+drawer as empty until the sidebar registers itself, which happens client-side.
 
 :::note `@theme-init`, not `@theme-original`
-The override wraps the component below it with `@theme-init/Navbar/Logo`.
-`@theme-original` would resolve back to this same component, because it ships
-inside a theme package that is itself in the stack. React SSR then recurses
-without bound and exhausts the heap during static site generation. If you
-wrap a component from inside a theme package, use `@theme-init`.
+Wrapping a component from inside a theme package needs `@theme-init/<Component>`.
+`@theme-original` would resolve back to the wrapper itself, because the package
+is in the stack it is resolving against. React SSR then recurses without bound
+and exhausts the heap during static site generation. The navbar overrides above
+replace their components outright and so sidestep this; `DocBreadcrumbs` and
+`MDXComponents` wrap, and use `@theme-init`.
 :::
+
+## `Navbar/SiteActions`: the public navbar's slot
+
+Renders `null`. The public navbar places it between search and the colour-mode
+toggle. A site overrides it in its own `src/theme/Navbar/SiteActions/index.js`
+to add a control of its own; the main docs site puts its Ask AI button there.
+The developer navbar does not render the slot.
+
+## `Footer`: nothing
+
+Returns `null`. No Vantage documentation site has a footer: the sidebar's
+collapse control already frames the bottom of the screen and the links a
+footer would carry are the navbar buttons. Delete `themeConfig.footer` from
+your config; leaving it in is harmless.
 
 ## `MDXComponents`: tables that scroll
 

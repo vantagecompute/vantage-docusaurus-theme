@@ -9,32 +9,41 @@ Everything the package exports from `@vantagecompute/docusaurus-theme`.
 
 | Export | Kind | Purpose |
 |---|---|---|
-| `default` | Plugin factory | The theme itself. Goes in `themes`, not in `plugins`. |
+| `default` | Plugin factory | The theme itself. Goes in `themes`, not in `plugins`. Takes the options below. |
+| `validateOptions` | Plugin static | Docusaurus calls it; you never do. Rejects anything but `navbarLinks`. |
 | `staticDir` | `string` | Absolute path to the package's `static/`. Goes in `staticDirectories`. |
 | `getProjectVersion()` | `() => string` | The project version from git tags. |
-| `navbarLogo` | `ThemeLogo` | Navbar logo config, linking to the docs hub. |
-| `footerLogo` | `ThemeLogo` | Footer logo config, linking to the marketing site. |
 | `rehypeTabsTransform` | Rehype plugin | Lowercase `<tabs>`/`<tabitem>` support in MDX. |
-| `ThemeLogo` | `interface` | The shape of the two logo objects. |
+| `resolveNavbarVariant(baseUrl)` | `(string) => 'public' \| 'developer'` | The rule the theme applies to pick a navbar. Exported for tests and tooling. |
+| `LOGO_HREF` | `Record<variant, string>` | Where the brand mark links, per variant. |
+| `MAX_NAVBAR_LINKS` | `number` | Two. |
+| `VantageThemeOptions`, `NavbarLink`, `NavbarVariant` | types | The option shapes. |
 
 The entry point is CommonJS (`lib/index.cjs`) with type declarations, so both
 `require` and `import` work:
 
 ```js
-const {staticDir, navbarLogo} = require('@vantagecompute/docusaurus-theme');
+const {staticDir, getProjectVersion} = require('@vantagecompute/docusaurus-theme');
 ```
 
 ```ts
-import {staticDir, navbarLogo} from '@vantagecompute/docusaurus-theme';
+import {staticDir, getProjectVersion} from '@vantagecompute/docusaurus-theme';
 ```
 
 ## `default` (the theme)
 
 ```js
-themes: ['@vantagecompute/docusaurus-theme'],
+themes: [
+  ['@vantagecompute/docusaurus-theme', {
+    navbarLinks: [
+      {label: 'GitHub', url: 'https://github.com/vantagecompute/vantage-mcp'},
+      {label: 'PyPI', url: 'https://pypi.org/project/vantage-mcp/'},
+    ],
+  }],
+],
 ```
 
-The factory returns a Docusaurus plugin that does three things:
+The factory returns a Docusaurus plugin that does four things:
 
 - `getThemePath()` puts `src/theme/` into the theme resolution stack, which is
   what makes the [component overrides](./components.md) take effect.
@@ -42,9 +51,40 @@ The factory returns a Docusaurus plugin that does three things:
   system loads. There is nothing to add to `customCss`.
 - `getPathsToWatch()` covers `src/theme/**/*.{js,jsx,ts,tsx,css}`, so a linked
   working tree hot-reloads during development.
+- `contentLoaded()` publishes the navbar variant, the brand-link href and the
+  validated `navbarLinks` as plugin global data, which the navbar components
+  read. Nothing in `themeConfig.navbar` is read by the theme.
 
-It takes no options. Everything configurable is configured through CSS tokens
-and through your own `src/theme/` overrides.
+### Options
+
+There is one.
+
+| Option | Type | Default | Meaning |
+|---|---|---|---|
+| `navbarLinks` | `{label: string, url: string}[]` | `[]` | External buttons on the right of the developer navbar. At most two. |
+
+Each entry is exactly `label` and `url`. The url must be absolute `http(s)`.
+The theme adds the external-link icon, `target="_blank"` and
+`rel="noopener noreferrer"`; a third entry, an extra property, a relative url
+or an unknown option fails the build with a message naming the problem.
+
+The public navbar ignores `navbarLinks`; it has no buttons to add.
+
+### Which navbar a site gets
+
+The theme decides from `baseUrl`, and there is no override:
+
+| `baseUrl` | Variant | Brand link | Right-hand side |
+|---|---|---|---|
+| starts with `/developer/` | developer | `https://docs.vantagecompute.ai/developer/` | `navbarLinks` buttons, colour-mode toggle |
+| anything else | public | `https://docs.vantagecompute.ai/` | search, the `Navbar/SiteActions` slot, colour-mode toggle |
+
+The developer navbar centres `siteConfig.title` with the version badge beside
+it. The public navbar shows only the badge, when `customFields.projectVersion`
+is set.
+
+Sites declare no `themeConfig.navbar` and no `themeConfig.footer`. A site that
+still does builds fine; the theme renders neither.
 
 ## `staticDir`
 
@@ -82,57 +122,6 @@ Two things to keep in mind:
 
 Pass the result through `customFields.projectVersion` for the navbar badge, and
 into the tagline if you want it on the page. Do not put it in `navbar.title`.
-
-## `navbarLogo` and `footerLogo`
-
-```js
-navbar: {title: 'my-project', logo: navbarLogo, items: [...]},
-footer: {style: 'dark', logo: footerLogo, links: [...]},
-```
-
-Both carry the same brand mark, `img/vantage-logo-color.svg`, resolved out of
-`staticDir`. They differ only in where they point:
-
-| | `href` | `target` |
-|---|---|---|
-| `navbarLogo` | `https://docs.vantagecompute.ai` | `_self` |
-| `footerLogo` | `https://vantagecompute.ai` | default |
-
-The navbar mark points at the docs hub because from inside a project's
-documentation the useful "home" is the rest of the documentation, and `_self`
-so that jump replaces the tab. The footer mark points at the company, which is
-what a reader who has finished reading is looking for.
-
-Neither has a `srcDark`, on purpose: the one colour mark is drawn to read in
-both colour modes, and a second asset would only be a second thing to keep in
-sync.
-
-**Override by spreading, never by mutating.** These are module-level objects
-shared by everything that imports them in the process:
-
-```js
-// Right
-logo: {...navbarLogo, href: 'https://docs.vantagecompute.ai/developer/'},
-
-// Wrong: changes the logo for every importer
-navbarLogo.href = '...';
-```
-
-Omit `logo` entirely to render no logo.
-
-### `ThemeLogo`
-
-```ts
-interface ThemeLogo {
-  alt: string;
-  src: string;
-  srcDark?: string;
-  href: string;
-  target?: string;
-  width?: number;
-  height?: number;
-}
-```
 
 ## `rehypeTabsTransform`
 

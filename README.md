@@ -16,8 +16,6 @@ Add the theme to your `docusaurus.config.js`:
 const {
   staticDir,
   rehypeTabsTransform,
-  navbarLogo,
-  footerLogo,
   getProjectVersion,
 } = require('@vantagecompute/docusaurus-theme');
 
@@ -30,8 +28,16 @@ const config = {
   // grows and shrinks reflows the header on every release.
   tagline: `What this project does (${projectVersion})`,
 
-  // Add the Vantage theme
-  themes: ['@vantagecompute/docusaurus-theme'],
+  // Add the Vantage theme. Its one option is the external buttons on the
+  // developer navbar: at most two, each a label and an absolute url.
+  themes: [
+    ['@vantagecompute/docusaurus-theme', {
+      navbarLinks: [
+        {label: 'GitHub', url: 'https://github.com/vantagecompute/my-project'},
+        {label: 'PyPI', url: 'https://pypi.org/project/my-project/'},
+      ],
+    }],
+  ],
 
   // Serve shared static assets (fonts, icons, brand mark)
   staticDirectories: ['static', staticDir],
@@ -47,23 +53,12 @@ const config = {
   ],
 
   themeConfig: {
-    navbar: {
-      title: 'my-project',
-      logo: navbarLogo,
-      items: [/* ... */],
-    },
-    footer: {
-      style: 'dark',
-      logo: footerLogo,
-      links: [/* ... */],
-    },
+    // No navbar and no footer here: the theme renders both. A site under
+    // /developer/ gets the developer navbar, anything else the public one.
+    prism: {/* ... */},
   },
 };
 ```
-
-`navbarLogo` and `footerLogo` carry the Vantage brand mark, its alt text, and
-the right link target for each position. Your site needs no copy of the SVG:
-it is served out of `staticDir`.
 
 ## What's included
 
@@ -79,21 +74,26 @@ Served from the package once `staticDir` is in your `staticDirectories`, so no s
 - **Fonts**: Satoshi (Regular, Medium, Bold + italics) as `.woff` files
 - **Icons**: Sun/moon toggles, search, external link, GitHub, chevron SVGs
 - **Brand mark**: `vantage-logo-color.svg`, the current Vantage mark, used by
-  `navbarLogo` and `footerLogo`. It has no dark variant on purpose: the one
-  colour mark is drawn to read in both colour modes.
+  the theme's navbar. It has no dark variant on purpose: the one colour mark
+  is drawn to read in both colour modes.
 - **Legacy logo**: `vantage-logo.svg`, the older monochrome mark. Kept for the
   `vantage-docs` hub, which still points at it. New sites should use the
   brand mark above.
 - **Favicon**: `favicon.ico`
 
 ### Theme Component Overrides
-| Component | Description |
+| Component | What it changes |
 |---|---|
-| `ColorModeToggle` | Custom sun/moon SVG icon toggle |
-| `DocBreadcrumbs` | Full-path breadcrumb rendering |
-| `Navbar/Logo` | Centered site title with the version badge beside it |
-| `Tabs` | Bugfix for Docusaurus 3.10 whitespace crash |
-| `Navbar/MobileSidebar/SecondaryMenu` | Clean secondary menu render |
+| `Navbar/Content` | The whole navbar, in a public or a developer variant chosen from `baseUrl` (0.5.0) |
+| `Navbar/Logo` | The brand link with the variant's baked href, the centred title and the version badge |
+| `Navbar/MobileSidebar/PrimaryMenu` | The developer navbar's external buttons, in the mobile drawer (0.5.0) |
+| `Navbar/SiteActions` | An empty slot in the public navbar for a site's own controls (0.5.0) |
+| `Navbar/MobileSidebar/SecondaryMenu` | A clean secondary-menu render |
+| `Footer` | Renders nothing (0.5.0) |
+| `ColorModeToggle` | Sun and moon SVG icons in place of the default toggle |
+| `DocBreadcrumbs` | Full-path breadcrumbs instead of the truncated default |
+| `Tabs` | A workaround for a Docusaurus 3.10 crash |
+| `MDXComponents` | Every markdown `table` renders inside a horizontal scroll region (0.4.9) |
 
 ### Utilities
 | Export | Description |
@@ -101,8 +101,7 @@ Served from the package once `staticDir` is in your `staticDirectories`, so no s
 | `staticDir` | Absolute path to this package's `static/` directory; add it to `staticDirectories` |
 | `rehypeTabsTransform` | Rehype plugin that transforms lowercase `<tabs>`/`<tabitem>` to React components |
 | `getProjectVersion()` | Project version inferred from git tags (`git describe --tags --always`), or `"dev"` |
-| `navbarLogo` | Navbar logo config: the brand mark, linking to `https://docs.vantagecompute.ai` |
-| `footerLogo` | Footer logo config: the same mark, linking to `https://vantagecompute.ai` |
+| `resolveNavbarVariant(baseUrl)` | The rule that picks the public or developer navbar; exported for tooling |
 
 ## Customization
 
@@ -117,19 +116,21 @@ your-docs-site/
         index.js
 ```
 
-### Overriding the logo
-
-`navbarLogo` and `footerLogo` are plain objects. Spread one to change a field,
-and leave the rest to the theme:
+### Navbar buttons
 
 ```js
-navbar: {
-  logo: { ...navbarLogo, href: 'https://docs.vantagecompute.ai/developer/' },
-},
+themes: [
+  ['@vantagecompute/docusaurus-theme', {
+    navbarLinks: [
+      {label: 'GitHub', url: 'https://github.com/vantagecompute/my-project'},
+      {label: 'PyPI', url: 'https://pypi.org/project/my-project/'},
+    ],
+  }],
+],
 ```
 
-Spread rather than mutate: the objects are shared by everything that imports
-them. To render no logo at all, just omit `logo`.
+That is the whole navbar surface a site has. See the docs site's Customization
+page for the public navbar's `SiteActions` slot.
 
 ### Extending CSS
 Add your own CSS in `src/css/custom.css` and reference it in your preset config. Your styles will layer on top of the shared design system:

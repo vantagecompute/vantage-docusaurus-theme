@@ -12,8 +12,6 @@ contributes is in the four highlighted places; the rest is ordinary Docusaurus.
 const {
   staticDir,
   rehypeTabsTransform,
-  navbarLogo,
-  footerLogo,
   getProjectVersion,
 } = require('@vantagecompute/docusaurus-theme');
 
@@ -25,8 +23,16 @@ const config = {
   // 1. The version goes in the tagline, never in `navbar.title`.
   tagline: `What this project does (${projectVersion})`,
 
-  // 2. Add the theme to the theme stack.
-  themes: ['@docusaurus/theme-mermaid', '@vantagecompute/docusaurus-theme'],
+  // 2. Add the theme, with its one option.
+  themes: [
+    '@docusaurus/theme-mermaid',
+    ['@vantagecompute/docusaurus-theme', {
+      navbarLinks: [
+        {label: 'GitHub', url: 'https://github.com/vantagecompute/my-project'},
+        {label: 'PyPI', url: 'https://pypi.org/project/my-project/'},
+      ],
+    }],
+  ],
 
   // 3. Serve the shared fonts, icons, brand mark and favicon.
   staticDirectories: ['static', staticDir],
@@ -48,16 +54,8 @@ const config = {
   customFields: {projectVersion},
 
   themeConfig: {
-    navbar: {
-      title: 'my-project',
-      logo: navbarLogo,
-      items: [/* ... */],
-    },
-    footer: {
-      style: 'dark',
-      logo: footerLogo,
-      links: [/* ... */],
-    },
+    // No navbar and no footer here: the theme renders both. See Exports.
+    prism: {/* ... */},
   },
 };
 
@@ -68,8 +66,7 @@ TypeScript sites use the same exports with `import`:
 
 ```ts
 import type {Config} from '@docusaurus/types';
-import {staticDir, navbarLogo, footerLogo, getProjectVersion}
-  from '@vantagecompute/docusaurus-theme';
+import {staticDir, getProjectVersion} from '@vantagecompute/docusaurus-theme';
 ```
 
 ## The four pieces, and why each is there
@@ -87,8 +84,8 @@ order works.
 `staticDir` is the absolute path to the package's own `static/` directory.
 Listing it alongside your site's `static` means every asset the design system
 references resolves without your repository carrying a copy: the Satoshi
-`@font-face` sources, the toggle and search icons, the brand mark that
-`navbarLogo` points at, and `img/favicon.ico`.
+`@font-face` sources, the toggle and search icons, the brand mark the navbar
+renders, and `img/favicon.ico`.
 
 Leave it out and the CSS still loads, but the fonts fall back to Open Sans and
 the icons render as broken images. That failure is quiet, which is worth

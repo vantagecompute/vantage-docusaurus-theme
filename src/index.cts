@@ -1,8 +1,38 @@
 import path from 'node:path';
-import { execSync } from 'node:child_process';
-import type { Plugin } from '@docusaurus/types';
+import {execSync} from 'node:child_process';
+import type {LoadContext, OptionValidationContext, Plugin} from '@docusaurus/types';
+import {
+  LOGO_HREF,
+  resolveNavbarVariant,
+  validateVantageThemeOptions,
+  type ResolvedVantageThemeOptions,
+  type VantageThemeOptions,
+} from './options.cjs';
 
-export default function themeVantage(): Plugin {
+export type {NavbarLink, NavbarVariant, VantageThemeOptions} from './options.cjs';
+export {LOGO_HREF, MAX_NAVBAR_LINKS, resolveNavbarVariant} from './options.cjs';
+
+/**
+ * Shape of the global data the theme's client components read through
+ * `usePluginData('@vantagecompute/docusaurus-theme')`.
+ */
+export interface VantageThemeGlobalData {
+  variant: 'public' | 'developer';
+  logoHref: string;
+  navbarLinks: ResolvedVantageThemeOptions['navbarLinks'];
+}
+
+export default function themeVantage(
+  context: LoadContext,
+  options: ResolvedVantageThemeOptions,
+): Plugin {
+  const variant = resolveNavbarVariant(context.baseUrl);
+  const globalData: VantageThemeGlobalData = {
+    variant,
+    logoHref: LOGO_HREF[variant],
+    navbarLinks: options.navbarLinks,
+  };
+
   return {
     name: '@vantagecompute/docusaurus-theme',
 
@@ -17,7 +47,24 @@ export default function themeVantage(): Plugin {
     getClientModules() {
       return [path.resolve(__dirname, '../src/css/custom.css')];
     },
+
+    // The navbar variant and the external buttons reach the client this way.
+    // Nothing in themeConfig.navbar is read by the theme's components.
+    contentLoaded({actions}) {
+      actions.setGlobalData(globalData);
+    },
   };
+}
+
+/**
+ * Docusaurus calls this before the plugin factory. Hand-rolled rather than Joi
+ * so the package carries no validation dependency; see src/options.cts.
+ */
+export function validateOptions({
+  options,
+}: OptionValidationContext<VantageThemeOptions | undefined, ResolvedVantageThemeOptions>):
+  ResolvedVantageThemeOptions {
+  return validateVantageThemeOptions(options);
 }
 
 /**
@@ -52,74 +99,3 @@ export function getProjectVersion(): string {
 
 // Re-export the rehype utility (plain JS, lives in src/utils/)
 export const rehypeTabsTransform = require(path.resolve(__dirname, '../src/utils/rehypeTabsTransform'));
-
-/**
- * Shape of a Docusaurus navbar or footer logo entry.
- */
-export interface ThemeLogo {
-  alt: string;
-  src: string;
-  srcDark?: string;
-  href: string;
-  target?: string;
-  width?: number;
-  height?: number;
-}
-
-/**
- * The Vantage colour brand mark, as a path relative to a served static
- * directory. It resolves once `staticDir` is in `staticDirectories`; no site
- * needs its own copy of the SVG.
- */
-const VANTAGE_LOGO_SRC = 'img/vantage-logo-color.svg';
-
-/**
- * Navbar logo for a Vantage documentation site.
- *
- * ```js
- * const { navbarLogo } = require('@vantagecompute/docusaurus-theme');
- * themeConfig: { navbar: { title: 'v8x', logo: navbarLogo, items: [...] } }
- * ```
- *
- * Deliberately has no `srcDark`. The single colour mark is drawn to read on
- * both colour modes, and a second asset would only be a second thing to keep
- * in sync.
- *
- * `href` points at the docs hub rather than the marketing site: from a spoke's
- * documentation the useful "home" is the rest of the documentation. `target`
- * is `_self` so that jump replaces the tab instead of opening a new one.
- *
- * Override by spreading, never by mutating -- the object is shared by every
- * site in the process:
- *
- * ```js
- * logo: { ...navbarLogo, href: 'https://docs.vantagecompute.ai/developer/' }
- * ```
- *
- * Omit `logo` entirely to render no navbar logo.
- */
-export const navbarLogo: ThemeLogo = {
-  alt: 'Vantage Compute Logo',
-  src: VANTAGE_LOGO_SRC,
-  href: 'https://docs.vantagecompute.ai',
-  target: '_self',
-};
-
-/**
- * Footer logo for a Vantage documentation site.
- *
- * ```js
- * const { footerLogo } = require('@vantagecompute/docusaurus-theme');
- * themeConfig: { footer: { style: 'dark', logo: footerLogo, links: [...] } }
- * ```
- *
- * Same mark as {@link navbarLogo}, but `href` points at the marketing site:
- * the footer is where a reader who has finished reading looks for the company.
- *
- * Override by spreading; omit `logo` to render no footer logo.
- */
-export const footerLogo: ThemeLogo = {
-  alt: 'Vantage Compute Logo',
-  src: VANTAGE_LOGO_SRC,
-  href: 'https://vantagecompute.ai',
-};

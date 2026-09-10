@@ -53,8 +53,8 @@ renders the brand link with an href the site cannot change, and
 `PrimaryMenu` repeats the developer navbar's external buttons in the mobile
 drawer. The only input a site has is the `navbarLinks` option.
 
-`Navbar/Logo` reads `siteConfig.title` (developer variant only) and
-`siteConfig.customFields.projectVersion`. theme-classic renders the title inside
+`Navbar/Logo` reads `siteConfig.title` and `siteConfig.customFields.projectVersion`,
+both on the developer variant only; the public navbar shows neither. theme-classic renders the title inside
 the brand anchor, so the override hides it there with CSS and re-renders it as
 its own absolutely centred element, which is what lets the version badge sit
 next to it. A version without a leading `v` gets one added.

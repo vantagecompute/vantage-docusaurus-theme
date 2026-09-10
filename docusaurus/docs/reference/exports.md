@@ -80,8 +80,8 @@ The theme decides from `baseUrl`, and there is no override:
 | anything else | public | `https://docs.vantagecompute.ai/` | search, the `Navbar/SiteActions` slot, colour-mode toggle |
 
 The developer navbar centres `siteConfig.title` with the version badge beside
-it. The public navbar shows only the badge, when `customFields.projectVersion`
-is set.
+it. The public navbar shows neither: it is the brand mark, search, the slot and
+the toggle, and `customFields.projectVersion` is ignored there.
 
 Sites declare no `themeConfig.navbar` and no `themeConfig.footer`. A site that
 still does builds fine; the theme renders neither.

@@ -16,6 +16,7 @@ per-site swizzling.
 | `Navbar/Logo` | A centered site title with a version badge beside it |
 | `Tabs` | A workaround for a Docusaurus 3.10 crash |
 | `Navbar/MobileSidebar/SecondaryMenu` | A clean secondary-menu render |
+| `MDXComponents` | Every markdown `table` renders inside a horizontal scroll region (0.4.9) |
 
 ## `Tabs`: the one that is a bugfix
 
@@ -59,6 +60,20 @@ inside a theme package that is itself in the stack. React SSR then recurses
 without bound and exhausts the heap during static site generation. If you
 wrap a component from inside a theme package, use `@theme-init`.
 :::
+
+## `MDXComponents`: tables that scroll
+
+The theme frames tables with a border and a radius. Doing that on the table
+itself needed `overflow: hidden`, which threw away the horizontal scrolling
+Docusaurus gives wide tables, so on a phone a four-column reference table
+squeezed into 61px columns. Since 0.4.9 the theme maps the markdown `table`
+element to `TableScroll`, a `div.table-scroll` with `role="region"` around the
+table. The wrapper carries the frame and scrolls; the table keeps its natural
+width, with cells capped at 60ch.
+
+A site that already wraps `table` in its own `MDXComponents` must remove that
+entry, or every table renders in two scroll regions. See `MIGRATION.md`,
+Part 3.
 
 ## Overriding an override
 

@@ -1185,8 +1185,17 @@ html[data-theme='dark'] .provider-showcase-item {
   background: var(--iris-50);
 }
 
+/* Infima draws the separator as a chevron background-image tinted by
+   --ifm-breadcrumb-separator-filter. Recolouring it through the `background`
+   shorthand also reset background-image, leaving a solid 7.5px square between
+   every crumb, so the trail read as a row of tags rather than a hierarchy.
+   Carry the chevron in a mask instead: background-color still sets the colour,
+   and the filter is no longer needed. */
 .breadcrumbs__item:not(:last-child)::after {
   background: var(--ink-300);
+  -webkit-mask: var(--ifm-breadcrumb-separator) center / contain no-repeat;
+  mask: var(--ifm-breadcrumb-separator) center / contain no-repeat;
+  filter: none;
   opacity: 0.5;
 }
 
@@ -2057,4 +2066,48 @@ article {
   .theme-doc-markdown article h3 {
     margin-top: 1.5rem;
   }
+}
+
+/* ── Mermaid diagrams in dark mode ─────────────────────────────────── */
+
+/* Mermaid's dark theme fills nodes with #1f2020, which sits within about 2% of
+   the Docusaurus dark page background (#1b1b1d): a contrast ratio of 1.05:1.
+   Node borders and label text stay legible, but the shapes lose their surfaces
+   and read as bare wireframe outlines. Lifting the fill to #3a3d44 gives
+   1.58:1 against the page while keeping label contrast comfortably above
+   WCAG AA.
+
+   !important is required throughout: mermaid injects a stylesheet inside each
+   SVG whose selectors are ID-scoped (#mermaid-nnn .label-container), so an
+   author stylesheet cannot win on specificity alone. */
+[data-theme='dark'] .docusaurus-mermaid-container rect.label-container,
+[data-theme='dark'] .docusaurus-mermaid-container .node rect,
+[data-theme='dark'] .docusaurus-mermaid-container .node polygon,
+[data-theme='dark'] .docusaurus-mermaid-container .node circle,
+[data-theme='dark'] .docusaurus-mermaid-container .node path {
+  fill: #3a3d44 !important;
+}
+
+/* Sequence diagrams draw their participant boxes as .actor / .labelBox rather
+   than .node, so they need the same lift. State diagrams already use .node rect
+   and are covered above. Notes are left alone deliberately: their accent fill
+   is meaningful and does not collide with the page background.
+
+   These selectors MUST stay qualified to `rect`. Mermaid puts class="actor" on
+   both the participant box and its label <text>, so a bare `.actor` rule would
+   paint the label the same colour as the box. */
+[data-theme='dark'] .docusaurus-mermaid-container rect.actor,
+[data-theme='dark'] .docusaurus-mermaid-container rect.labelBox {
+  fill: #3a3d44 !important;
+}
+
+/* The participant label itself. Mermaid's own `.actor { fill: #1f2020 }` hits
+   the <text> as well as the box, and the rule meant to correct it,
+   `text.actor > tspan`, never matches: these labels put their text directly in
+   the <text> element with no tspan. So the name renders near-black, at 1.50:1
+   on the lifted box and 1.05:1 on the page, which is why participants looked
+   like empty rectangles. --ink-900 resolves to #f4f5fb here, giving 10:1. */
+[data-theme='dark'] .docusaurus-mermaid-container text.actor,
+[data-theme='dark'] .docusaurus-mermaid-container text.actor > tspan {
+  fill: var(--ink-900) !important;
 }

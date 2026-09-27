@@ -32,8 +32,9 @@ jobs:
         with:
           node-version: 24
           registry-url: https://registry.npmjs.org
-          cache: yarn
+          cache: ${{ runner.environment == 'github-hosted' && 'yarn' || '' }}
           cache-dependency-path: yarn.lock
+          package-manager-cache: ${{ runner.environment == 'github-hosted' }}
 
       - name: Enable corepack
         run: corepack enable

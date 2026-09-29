@@ -11,6 +11,15 @@ import {
 
 export type {NavbarLink, NavbarVariant, VantageThemeOptions} from './options.cjs';
 export {LOGO_HREF, MAX_NAVBAR_LINKS, resolveNavbarVariant} from './options.cjs';
+export {
+  vantagePrism,
+  vantageLightCodeTheme,
+  vantageDarkCodeTheme,
+  VANTAGE_PRISM_LANGUAGES,
+  LIGHT_CODE_PALETTE,
+  DARK_CODE_PALETTE,
+} from './prism.cjs';
+export type {VantageCodeTheme} from './prism.cjs';
 
 /**
  * Shape of the global data the theme's client components read through

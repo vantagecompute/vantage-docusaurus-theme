@@ -763,7 +763,9 @@ html[data-theme='dark'] .provider-showcase-item {
 }
 
 .guide-step > h2,
-.guide-step > h3 {
+.guide-step > h3,
+.guide-step > h4,
+.guide-step > h5 {
   margin: 0;
   padding: 0;
   border-bottom: none;
@@ -773,7 +775,9 @@ html[data-theme='dark'] .provider-showcase-item {
 }
 
 .guide-step > h2 ~ *,
-.guide-step > h3 ~ * {
+.guide-step > h3 ~ *,
+.guide-step > h4 ~ *,
+.guide-step > h5 ~ * {
   grid-column: 1 / -1;
 }
 

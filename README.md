@@ -17,6 +17,7 @@ const {
   staticDir,
   rehypeTabsTransform,
   getProjectVersion,
+  vantagePrism,
 } = require('@vantagecompute/docusaurus-theme');
 
 const projectVersion = getProjectVersion();
@@ -55,7 +56,8 @@ const config = {
   themeConfig: {
     // No navbar and no footer here: the theme renders both. A site under
     // /developer/ gets the developer navbar, anything else the public one.
-    prism: {/* ... */},
+    // Code block colours and languages, shared by every Vantage site.
+    prism: vantagePrism,
   },
 };
 ```
@@ -102,6 +104,27 @@ Served from the package once `staticDir` is in your `staticDirectories`, so no s
 | `rehypeTabsTransform` | Rehype plugin that transforms lowercase `<tabs>`/`<tabitem>` to React components |
 | `getProjectVersion()` | Project version inferred from git tags (`git describe --tags --always`), or `"dev"` |
 | `resolveNavbarVariant(baseUrl)` | The rule that picks the public or developer navbar; exported for tooling |
+| `vantagePrism` | Drop-in `themeConfig.prism`: the Vantage light and dark code themes plus the extra grammars every site needs |
+| `vantageLightCodeTheme`, `vantageDarkCodeTheme` | The two code themes on their own |
+| `VANTAGE_PRISM_LANGUAGES` | The extra grammars in `vantagePrism` (bash, shell-session, powershell, http, ini, toml, hcl, diff, promql) |
+
+### Code block colours
+
+`vantagePrism` replaces each site's own `prism` settings. Its colours are built
+from the theme's palette on the same code backgrounds the site already shows
+(`--ink-50` light, `--ink-100` dark), and every one meets WCAG AA (4.5:1), also
+on a highlighted line; `test/prism.test.cjs` enforces that. It also loads the
+grammars prism-react-renderer does not bundle, so bash and friends are
+highlighted everywhere.
+
+A site that needs another language extends the list instead of replacing it:
+
+```js
+prism: {
+  ...vantagePrism,
+  additionalLanguages: [...vantagePrism.additionalLanguages, 'rust'],
+},
+```
 
 ## Customization
 

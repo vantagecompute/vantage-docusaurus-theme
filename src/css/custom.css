@@ -316,7 +316,10 @@ article a:hover {
 }
 
 /* ── Inline code & kbd ─────────────────────────────────────────────── */
-.markdown code:not([class*='language-']) {
+/* Inline code only. `:not(pre) >` keeps these rules out of code blocks, where
+   the <code> inside <pre> carries no language class and used to match,
+   painting --ink-50 / --ink-100 over the syntax theme's background. */
+.markdown :not(pre) > code:not([class*='language-']) {
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.86em;
   background: var(--ink-50);
@@ -326,7 +329,7 @@ article a:hover {
   color: var(--ink-700);
 }
 
-[data-theme='dark'] .markdown code:not([class*='language-']) {
+[data-theme='dark'] .markdown :not(pre) > code:not([class*='language-']) {
   background: var(--ink-100);
   border-color: var(--ink-200);
   color: var(--ink-700);

@@ -13,21 +13,21 @@
   border: none;
   border-radius: 0;
   background: transparent;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--ifm-font-color-base);
   transition: color 0.15s;
 }
 
-.toggleButton:hover {
-  color: rgba(255, 255, 255, 1) !important;
-}
-
-[data-theme='dark'] .toggleButton {
-  background: transparent;
+/* The navbar is navy in both color modes, so the toggle is white there.
+   Anywhere else it follows the page text color. That matters in the mobile
+   drawer header, which is white in light mode and hid a white icon. The
+   drawer is a child of nav.navbar, so the scope is .navbar__inner (the bar
+   itself), not .navbar. */
+:global(.navbar__inner) .toggleButton {
   color: rgba(255, 255, 255, 0.85);
 }
 
-[data-theme='dark'] .toggleButton:hover {
-  color: rgba(255, 255, 255, 1) !important;
+:global(.navbar__inner) .toggleButton:hover {
+  color: rgba(255, 255, 255, 1);
 }
 
 [data-theme='light'] .lightToggleIcon,

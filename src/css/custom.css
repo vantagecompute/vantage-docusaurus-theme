@@ -906,6 +906,25 @@ html[data-theme='dark'] .provider-showcase-item {
 
 .navbar__logo {
   height: var(--vantage-navbar-logo-height);
+  /* The wordmark fills with currentColor (see Navbar/Logo/VantageLogo). By
+     default it follows the page text, which is what the mobile drawer header
+     needs: that header is white in light mode and dark in dark mode. */
+  color: var(--ifm-font-color-base);
+}
+
+/* Infima sizes `.navbar__logo img`, which no longer matches: the logo is an
+   inline <svg>. Same sizing, so the brand does not change size. */
+.navbar__logo svg {
+  display: block;
+  height: 100%;
+  width: auto;
+}
+
+/* The navbar itself is navy in both colour modes, so the wordmark is white
+   there. Scoped to .navbar__inner, not .navbar: the drawer is a child of
+   nav.navbar, so .navbar alone would turn the drawer's wordmark white too. */
+.navbar__inner .navbar__logo {
+  color: var(--vantage-navbar-text);
 }
 
 .navbar__link:hover {

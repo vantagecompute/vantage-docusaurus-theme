@@ -96,6 +96,10 @@
   --vantage-purple: var(--iris-700);
   --vantage-purple-dark: var(--iris-900);
   --vantage-button: var(--iris-500);
+  /* Primary button fills. White text sits on these, so they must stay dark
+     enough for 4.5:1 in both modes. */
+  --vantage-button-fill: var(--iris-700);
+  --vantage-button-fill-hover: var(--iris-600);
 
   /* Infima  -  primary mapped to iris */
   --ifm-color-primary: #5046e5;
@@ -182,6 +186,11 @@
   --vantage-purple: var(--iris-700);
   --vantage-purple-dark: var(--iris-900);
   --vantage-button: var(--iris-500);
+  /* The dark palette lightens --iris-700 to #818cf8 for links and accents,
+     which put white button text at 2.98:1 (4.47:1 on hover). Buttons keep
+     the deeper purples instead: 6.27:1 at rest, 7.9:1 on hover. */
+  --vantage-button-fill: #5046e5;
+  --vantage-button-fill-hover: #4338ca;
 
   --ifm-color-primary: #818cf8;
   --ifm-color-primary-dark: #6366f1;
@@ -1246,15 +1255,15 @@ a.button--primary:hover,
 a.button--primary:focus,
 a.button--primary:active {
   color: #ffffff !important;
-  background-color: var(--iris-700) !important;
-  border-color: var(--iris-700) !important;
+  background-color: var(--vantage-button-fill) !important;
+  border-color: var(--vantage-button-fill) !important;
   text-decoration: none !important;
 }
 
 .button--primary:hover,
 a.button--primary:hover {
-  background-color: var(--iris-600) !important;
-  border-color: var(--iris-600) !important;
+  background-color: var(--vantage-button-fill-hover) !important;
+  border-color: var(--vantage-button-fill-hover) !important;
 }
 
 .button--secondary,
@@ -1812,6 +1821,13 @@ button.DocSearch-Button {
 .DocSearch-Logo,
 .DocSearch-Footer a[href*='algolia'],
 .DocSearch-PoweredBy {
+  display: none !important;
+}
+
+/* The /search page carries its own "Powered by" label and Algolia logo, in
+   a column beside the result count. Hidden for the same reason as the modal
+   attribution above; the label also measured 2.68:1 in light mode. */
+[class*='searchLogoColumn'] {
   display: none !important;
 }
 

@@ -877,7 +877,8 @@ html[data-theme='dark'] .provider-showcase-item {
 
 .navbar__title,
 .navbar__item,
-.navbar__link {
+.navbar__link,
+.navbar__toggle {
   color: var(--vantage-navbar-text);
 }
 
@@ -933,6 +934,12 @@ html[data-theme='dark'] .provider-showcase-item {
   .navbar__toggle {
     padding: 7px;
     margin: -7px 0;
+  }
+
+  /* Infima strokes the hamburger at 2px. At phone size on the navy bar the
+     three lines read as faint, so give them a little more weight. */
+  .navbar__toggle svg path {
+    stroke-width: 2.5;
   }
 
   .navbar-sidebar__close {

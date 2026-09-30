@@ -117,6 +117,11 @@ on a highlighted line; `test/prism.test.cjs` enforces that. It also loads the
 grammars prism-react-renderer does not bundle, so bash and friends are
 highlighted everywhere.
 
+The theme also widens Prism's bash flag rule, so hyphenated flags such as
+`--cloud-account` or `--dry-run` are coloured like `--app`. Stock Prism only
+colours single-word flags. This applies to `bash` and `shell-session` blocks on
+every site that uses the theme.
+
 A site that needs another language extends the list instead of replacing it:
 
 ```js

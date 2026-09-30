@@ -1,6 +1,5 @@
 import type {Config} from '@docusaurus/types';
-import {themes as prismThemes} from 'prism-react-renderer';
-import {staticDir, getProjectVersion} from '@vantagecompute/docusaurus-theme';
+import {staticDir, getProjectVersion, vantagePrism} from '@vantagecompute/docusaurus-theme';
 
 // This site is the theme's own documentation, and it dogfoods the theme: the
 // dependency in package.json is the PUBLISHED package from npm, not a file:
@@ -129,11 +128,7 @@ const config: Config = {
 
   themeConfig: {
     codeBlock: {showCopyButton: true},
-    prism: {
-      theme: prismThemes.vsLight,
-      darkTheme: prismThemes.dracula,
-      additionalLanguages: ['bash', 'diff', 'json', 'jsx', 'tsx', 'css', 'yaml'],
-    },
+    prism: vantagePrism,
     tableOfContents: {minHeadingLevel: 2, maxHeadingLevel: 4},
   },
 };

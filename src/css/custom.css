@@ -96,6 +96,10 @@
   --vantage-purple: var(--iris-700);
   --vantage-purple-dark: var(--iris-900);
   --vantage-button: var(--iris-500);
+  /* Primary button fills. White text sits on these, so they must stay dark
+     enough for 4.5:1 in both modes. */
+  --vantage-button-fill: var(--iris-700);
+  --vantage-button-fill-hover: var(--iris-600);
 
   /* Infima  -  primary mapped to iris */
   --ifm-color-primary: #5046e5;
@@ -182,6 +186,11 @@
   --vantage-purple: var(--iris-700);
   --vantage-purple-dark: var(--iris-900);
   --vantage-button: var(--iris-500);
+  /* The dark palette lightens --iris-700 to #818cf8 for links and accents,
+     which put white button text at 2.98:1 (4.47:1 on hover). Buttons keep
+     the deeper purples instead: 6.27:1 at rest, 7.9:1 on hover. */
+  --vantage-button-fill: #5046e5;
+  --vantage-button-fill-hover: #4338ca;
 
   --ifm-color-primary: #818cf8;
   --ifm-color-primary-dark: #6366f1;
@@ -307,7 +316,10 @@ article a:hover {
 }
 
 /* ── Inline code & kbd ─────────────────────────────────────────────── */
-.markdown code:not([class*='language-']) {
+/* Inline code only. `:not(pre) >` keeps these rules out of code blocks, where
+   the <code> inside <pre> carries no language class and used to match,
+   painting --ink-50 / --ink-100 over the syntax theme's background. */
+.markdown :not(pre) > code:not([class*='language-']) {
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.86em;
   background: var(--ink-50);
@@ -317,7 +329,7 @@ article a:hover {
   color: var(--ink-700);
 }
 
-[data-theme='dark'] .markdown code:not([class*='language-']) {
+[data-theme='dark'] .markdown :not(pre) > code:not([class*='language-']) {
   background: var(--ink-100);
   border-color: var(--ink-200);
   color: var(--ink-700);
@@ -906,6 +918,25 @@ html[data-theme='dark'] .provider-showcase-item {
 
 .navbar__logo {
   height: var(--vantage-navbar-logo-height);
+  /* The wordmark fills with currentColor (see Navbar/Logo/VantageLogo). By
+     default it follows the page text, which is what the mobile drawer header
+     needs: that header is white in light mode and dark in dark mode. */
+  color: var(--ifm-font-color-base);
+}
+
+/* Infima sizes `.navbar__logo img`, which no longer matches: the logo is an
+   inline <svg>. Same sizing, so the brand does not change size. */
+.navbar__logo svg {
+  display: block;
+  height: 100%;
+  width: auto;
+}
+
+/* The navbar itself is navy in both colour modes, so the wordmark is white
+   there. Scoped to .navbar__inner, not .navbar: the drawer is a child of
+   nav.navbar, so .navbar alone would turn the drawer's wordmark white too. */
+.navbar__inner .navbar__logo {
+  color: var(--vantage-navbar-text);
 }
 
 .navbar__link:hover {
@@ -1246,15 +1277,15 @@ a.button--primary:hover,
 a.button--primary:focus,
 a.button--primary:active {
   color: #ffffff !important;
-  background-color: var(--iris-700) !important;
-  border-color: var(--iris-700) !important;
+  background-color: var(--vantage-button-fill) !important;
+  border-color: var(--vantage-button-fill) !important;
   text-decoration: none !important;
 }
 
 .button--primary:hover,
 a.button--primary:hover {
-  background-color: var(--iris-600) !important;
-  border-color: var(--iris-600) !important;
+  background-color: var(--vantage-button-fill-hover) !important;
+  border-color: var(--vantage-button-fill-hover) !important;
 }
 
 .button--secondary,
@@ -1812,6 +1843,13 @@ button.DocSearch-Button {
 .DocSearch-Logo,
 .DocSearch-Footer a[href*='algolia'],
 .DocSearch-PoweredBy {
+  display: none !important;
+}
+
+/* The /search page carries its own "Powered by" label and Algolia logo, in
+   a column beside the result count. Hidden for the same reason as the modal
+   attribution above; the label also measured 2.68:1 in light mode. */
+[class*='searchLogoColumn'] {
   display: none !important;
 }
 

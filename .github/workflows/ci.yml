@@ -19,18 +19,25 @@ concurrency:
 permissions:
   contents: read
 
+# Set the repository variable USE_SELF_HOSTED_RUNNERS to "true" to run the
+# jobs below in the vantage-eng runner group; otherwise they run on GitHub-hosted
+# ubuntu-26.04. SELF_HOSTED_RUNS_ON, a runs-on value in JSON such as
+# ["self-hosted", "Linux", "X64"], replaces the default runner set. Self-hosted
+# runners keep the package manager cache on local disk, so setup-node syncs
+# the actions cache only on GitHub-hosted runners.
 jobs:
   package:
     name: build package
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.USE_SELF_HOSTED_RUNNERS == 'true' && fromJSON(vars.SELF_HOSTED_RUNS_ON || '{"group":"vantage-eng","labels":["X64"]}') || 'ubuntu-26.04' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
-          cache: yarn
+          cache: ${{ runner.environment == 'github-hosted' && 'yarn' || '' }}
           cache-dependency-path: yarn.lock
+          package-manager-cache: ${{ runner.environment == 'github-hosted' }}
 
       - name: Enable corepack
         run: corepack enable
@@ -79,7 +86,7 @@ jobs:
 
   docs:
     name: build docs
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.USE_SELF_HOSTED_RUNNERS == 'true' && fromJSON(vars.SELF_HOSTED_RUNS_ON || '{"group":"vantage-eng","labels":["X64"]}') || 'ubuntu-26.04' }}
     steps:
       # fetch-depth: 0 for the same reason the deploy workflow needs it: the
       # version badge comes from `git describe --tags`.
@@ -87,11 +94,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
-          cache: npm
+          cache: ${{ runner.environment == 'github-hosted' && 'npm' || '' }}
           cache-dependency-path: docusaurus/package-lock.json
+          package-manager-cache: ${{ runner.environment == 'github-hosted' }}
 
       - name: Install docs dependencies
         working-directory: docusaurus

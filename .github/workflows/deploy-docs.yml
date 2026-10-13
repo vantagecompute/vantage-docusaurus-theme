@@ -47,9 +47,15 @@ concurrency:
   group: docs-spoke
   cancel-in-progress: false
 
+# Set the repository variable USE_SELF_HOSTED_RUNNERS to "true" to run the
+# jobs below in the vantage-eng runner group; otherwise they run on GitHub-hosted
+# ubuntu-26.04. SELF_HOSTED_RUNS_ON, a runs-on value in JSON such as
+# ["self-hosted", "Linux", "X64"], replaces the default runner set. Self-hosted
+# runners keep the package manager cache on local disk, so setup-node syncs
+# the actions cache only on GitHub-hosted runners.
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.USE_SELF_HOSTED_RUNNERS == 'true' && fromJSON(vars.SELF_HOSTED_RUNS_ON || '{"group":"vantage-eng","labels":["X64"]}') || 'ubuntu-26.04' }}
     steps:
       # fetch-depth: 0 rather than the default 1. The site's version badge comes
       # from `getProjectVersion()`, which shells out to `git describe --tags`;
@@ -59,11 +65,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
-          cache: npm
+          cache: ${{ runner.environment == 'github-hosted' && 'npm' || '' }}
           cache-dependency-path: docusaurus/package-lock.json
+          package-manager-cache: ${{ runner.environment == 'github-hosted' }}
 
       - name: Install docs dependencies
         working-directory: docusaurus
@@ -121,7 +128,7 @@ jobs:
           echo "Published package assets OK"
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
         with:
           role-to-assume: ${{ secrets.DOCS_SPOKE_ROLE_ARN }}
           aws-region: us-east-1

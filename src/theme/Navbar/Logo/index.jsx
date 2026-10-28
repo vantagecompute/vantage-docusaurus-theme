@@ -2,11 +2,7 @@ import React from 'react';
 import Link from '@docusaurus/Link';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import {useVantageNavbar} from '../useVantageNavbar';
-
-// The one colour mark reads on both colour modes, so there is no srcDark and
-// no second asset to keep in sync. Resolves through staticDir, which every
-// Vantage site lists in staticDirectories.
-const LOGO_SRC = 'img/vantage-logo-color.svg';
+import VantageLogo from './VantageLogo';
 
 /**
  * The brand link, the centred title and the version badge.
@@ -18,8 +14,10 @@ const LOGO_SRC = 'img/vantage-logo-color.svg';
  * boundaries and should be a full navigation. Same tab: command-click covers
  * "open in a new tab".
  *
- * The markup mirrors theme-classic's (navbar__brand > navbar__logo > img,
- * plus b.navbar__title) so Infima's and this theme's CSS keep applying. On
+ * The markup mirrors theme-classic's (navbar__brand > navbar__logo, plus
+ * b.navbar__title) so Infima's and this theme's CSS keep applying. The logo is
+ * an inline SVG rather than an <img> so its wordmark can follow the context
+ * it sits on; see VantageLogo. On
  * desktop the in-brand title is hidden by CSS and re-rendered centred below,
  * which is what lets the version badge sit beside it.
  *
@@ -30,14 +28,13 @@ const LOGO_SRC = 'img/vantage-logo-color.svg';
  */
 export default function NavbarLogo() {
   const {logoHref, title, version} = useVantageNavbar();
-  const src = useBaseUrl(LOGO_SRC);
   const homeHref = useBaseUrl('/');
 
   return (
     <>
       <a className="navbar__brand" href={logoHref}>
         <div className="navbar__logo">
-          <img src={src} alt="Vantage Compute Logo" />
+          <VantageLogo />
         </div>
         {title && <b className="navbar__title text--truncate">{title}</b>}
       </a>

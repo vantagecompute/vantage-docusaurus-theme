@@ -1,6 +1,6 @@
 {
   "name": "@vantagecompute/docusaurus-theme",
-  "version": "0.5.2",
+  "version": "0.5.5",
   "description": "Shared Vantage Compute Docusaurus theme: design system, brand assets, and common theme overrides for all vantagecompute documentation sites.",
   "license": "MIT",
   "main": "lib/index.cjs",
@@ -19,9 +19,9 @@
     "@docusaurus/core": "^3.0.0",
     "@docusaurus/plugin-content-docs": "^3.0.0",
     "@docusaurus/theme-common": "^3.0.0",
+    "@docusaurus/theme-mermaid": "^3.0.0",
     "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0",
-    "@docusaurus/theme-mermaid": "^3.0.0"
+    "react-dom": "^18.0.0 || ^19.0.0"
   },
   "peerDependenciesMeta": {
     "@docusaurus/theme-mermaid": {

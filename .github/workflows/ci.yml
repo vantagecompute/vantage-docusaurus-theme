@@ -66,6 +66,8 @@ jobs:
             lib/options.cjs \
             src/css/custom.css \
             src/utils/rehypeTabsTransform.js \
+            src/theme/Mermaid/index.js \
+            src/theme/Mermaid/config.js \
             static/fonts/Satoshi-Regular.woff \
             static/img/vantage-logo-color.svg \
             static/img/favicon.ico

@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from '@docusaurus/Link';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import {useVantageNavbar} from '../useVantageNavbar';
 
@@ -21,10 +22,16 @@ const LOGO_SRC = 'img/vantage-logo-color.svg';
  * plus b.navbar__title) so Infima's and this theme's CSS keep applying. On
  * desktop the in-brand title is hidden by CSS and re-rendered centred below,
  * which is what lets the version badge sit beside it.
+ *
+ * The centred title links to the site's own home, so a page that brings its
+ * own navigation (an API reference such as Scalar's, which replaces the docs
+ * sidebar) always has a way back to the docs. @docusaurus/Link, unlike the
+ * brand link: this jump stays inside the site.
  */
 export default function NavbarLogo() {
   const {logoHref, title, version} = useVantageNavbar();
   const src = useBaseUrl(LOGO_SRC);
+  const homeHref = useBaseUrl('/');
 
   return (
     <>
@@ -36,7 +43,11 @@ export default function NavbarLogo() {
       </a>
       {(title || version) && (
         <div className="navbar__center-title">
-          {title && <span className="navbar__center-title-text">{title}</span>}
+          {title && (
+            <Link className="navbar__center-title-text" to={homeHref} title={`${title} documentation home`}>
+              {title}
+            </Link>
+          )}
           {version && <span className="navbar__version-badge">{version}</span>}
         </div>
       )}

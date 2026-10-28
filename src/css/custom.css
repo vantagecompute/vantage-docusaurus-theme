@@ -290,6 +290,8 @@ article h4 {
 .markdown p {
   color: var(--ink-700);
   max-width: 72ch;
+  line-height: 1.75;
+  margin-bottom: 1.15rem;
 }
 
 .markdown a,
@@ -311,15 +313,19 @@ article a:hover {
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.86em;
   background: var(--ink-50);
-  border: 1px solid var(--ink-100);
+  /* No border: in technical prose a sentence can carry a dozen identifiers, and a
+     bordered chip on each one turned the paragraph into a row of boxes. The
+     tint alone marks the code; the clone keeps it on both halves of a wrap. */
+  border: 0;
   border-radius: 4px;
-  padding: 1px 5px;
+  padding: 0.1em 0.35em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
   color: var(--ink-700);
 }
 
 [data-theme='dark'] .markdown code:not([class*='language-']) {
   background: var(--ink-100);
-  border-color: var(--ink-200);
   color: var(--ink-700);
 }
 
@@ -367,12 +373,13 @@ div[class^='codeBlockTitle'] {
 
 /* ── Tables ────────────────────────────────────────────────────────── */
 /* Every markdown table renders inside `.table-scroll` (src/theme/MDXComponents),
-   which carries the rounded frame and scrolls horizontally. The table itself
-   keeps its natural width. The old `display: table; overflow: hidden` on the
-   table removed Docusaurus's own overflow scrolling, and a four-column
-   reference table on a 345px phone column squeezed to 61px columns with
-   171px rows. Cells are capped at 60ch so one long description cannot force
-   a 3000px scroll. */
+   which carries the rounded frame and scrolls horizontally only as a last
+   resort. The table fills the column and its cells wrap: `min-width:
+   max-content` used to size it to its longest unwrapped line, so on a laptop a
+   four-column table of prose ran past the frame and its last columns read as
+   cut off. Each cell keeps a floor (9rem) instead, so on a phone the table
+   still scrolls rather than squeezing to 61px columns with 171px rows, and a
+   long identifier in a cell breaks rather than forcing the scroll. */
 .markdown .table-scroll,
 article .table-scroll {
   margin: 14px 0;
@@ -393,7 +400,6 @@ article .table-scroll:focus-visible {
 article table {
   display: table;
   width: 100%;
-  min-width: max-content;
   border-collapse: collapse;
   font-size: 13px;
   margin: 0;
@@ -406,7 +412,16 @@ article table {
 .markdown table th,
 article table td,
 article table th {
-  max-width: 60ch;
+  min-width: 9rem;
+  text-align: left;
+}
+
+/* A narrow key column (a name, a flag, a status) needs no 9rem floor. */
+.markdown table td:first-child,
+.markdown table th:first-child,
+article table td:first-child,
+article table th:first-child {
+  min-width: 6rem;
 }
 
 .markdown table th,
@@ -444,6 +459,15 @@ article table tr:last-child td {
 .markdown table td code,
 article table td code {
   font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+/* The key column holds the name a row is about (`job_events`, a flag, a
+   status): it stays whole, and the prose columns beside it wrap instead. */
+.markdown table td:first-child code,
+article table td:first-child code {
+  overflow-wrap: normal;
+  white-space: nowrap;
 }
 
 [data-theme='dark'] .markdown table,
@@ -466,7 +490,8 @@ article table td code {
 }
 
 .markdown li {
-  margin: 0.3rem 0;
+  margin: 0.45rem 0;
+  line-height: 1.7;
 }
 
 .markdown li::marker {
@@ -2012,6 +2037,15 @@ article {
   font-weight: 600;
   font-size: 1.2rem;
   color: var(--vantage-navbar-text);
+  /* The title is the link home (Navbar/Logo); the row around it stays
+     click-through so it never covers the brand link or the buttons. */
+  pointer-events: auto;
+}
+
+.navbar__center-title-text:hover {
+  color: var(--vantage-navbar-text);
+  text-decoration: none;
+  opacity: 0.85;
 }
 
 .navbar__version-badge {
@@ -2079,46 +2113,42 @@ article {
   }
 }
 
-/* ── Mermaid diagrams in dark mode ─────────────────────────────────── */
+/* ── Mermaid diagrams ───────────────────────────────────────────────── */
 
-/* Mermaid's dark theme fills nodes with #1f2020, which sits within about 2% of
-   the Docusaurus dark page background (#1b1b1d): a contrast ratio of 1.05:1.
-   Node borders and label text stay legible, but the shapes lose their surfaces
-   and read as bare wireframe outlines. Lifting the fill to #3a3d44 gives
-   1.58:1 against the page while keeping label contrast comfortably above
-   WCAG AA.
-
-   !important is required throughout: mermaid injects a stylesheet inside each
-   SVG whose selectors are ID-scoped (#mermaid-nnn .label-container), so an
-   author stylesheet cannot win on specificity alone. */
-[data-theme='dark'] .docusaurus-mermaid-container rect.label-container,
-[data-theme='dark'] .docusaurus-mermaid-container .node rect,
-[data-theme='dark'] .docusaurus-mermaid-container .node polygon,
-[data-theme='dark'] .docusaurus-mermaid-container .node circle,
-[data-theme='dark'] .docusaurus-mermaid-container .node path {
-  fill: #3a3d44 !important;
+/* The palette, type and spacing come from the theme's Mermaid component
+   (src/theme/Mermaid/config.js), which renders every diagram at its natural
+   size. The container frames it and, when a diagram is wider than the column,
+   scrolls it inside the frame; the page itself never scrolls sideways. The SVG
+   is centred with auto margins rather than flexbox, because a centred flex row
+   that overflows clips its left edge out of the scroll range. */
+.markdown .vantage-mermaid,
+article .vantage-mermaid {
+  margin: 1.75rem 0;
+  padding: 1.25rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--ink-100);
+  border-radius: 8px;
 }
 
-/* Sequence diagrams draw their participant boxes as .actor / .labelBox rather
-   than .node, so they need the same lift. State diagrams already use .node rect
-   and are covered above. Notes are left alone deliberately: their accent fill
-   is meaningful and does not collide with the page background.
-
-   These selectors MUST stay qualified to `rect`. Mermaid puts class="actor" on
-   both the participant box and its label <text>, so a bare `.actor` rule would
-   paint the label the same colour as the box. */
-[data-theme='dark'] .docusaurus-mermaid-container rect.actor,
-[data-theme='dark'] .docusaurus-mermaid-container rect.labelBox {
-  fill: #3a3d44 !important;
+.markdown .vantage-mermaid > svg,
+article .vantage-mermaid > svg {
+  display: block;
+  margin: 0 auto;
+  max-width: none;
+  height: auto;
 }
 
-/* The participant label itself. Mermaid's own `.actor { fill: #1f2020 }` hits
-   the <text> as well as the box, and the rule meant to correct it,
-   `text.actor > tspan`, never matches: these labels put their text directly in
-   the <text> element with no tspan. So the name renders near-black, at 1.50:1
-   on the lifted box and 1.05:1 on the page, which is why participants looked
-   like empty rectangles. --ink-900 resolves to #f4f5fb here, giving 10:1. */
-[data-theme='dark'] .docusaurus-mermaid-container text.actor,
-[data-theme='dark'] .docusaurus-mermaid-container text.actor > tspan {
-  fill: var(--ink-900) !important;
+/* Mermaid wraps each HTML label in a <p> and sizes the label's box by measuring
+   it off-page, where none of the article's paragraph rules apply. Inside the
+   article, `.markdown p` then adds its line height, bottom margin and measure,
+   the text outgrows the box mermaid measured, and the last line is clipped.
+   Labels get mermaid's own metrics back. */
+.markdown .vantage-mermaid p,
+article .vantage-mermaid p {
+  margin: 0;
+  max-width: none;
+  line-height: 1.5;
+  color: inherit;
 }

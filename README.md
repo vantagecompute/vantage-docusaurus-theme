@@ -85,7 +85,7 @@ Served from the package once `staticDir` is in your `staticDirectories`, so no s
 | Component | What it changes |
 |---|---|
 | `Navbar/Content` | The whole navbar, in a public or a developer variant chosen from `baseUrl` (0.5.0) |
-| `Navbar/Logo` | The brand link with the variant's baked href, the centred title and the version badge |
+| `Navbar/Logo` | The brand link with the variant's baked href, the centred title (a link to the site's own home, so a page with its own navigation, such as an API reference, always leads back to the docs) and the version badge |
 | `Navbar/MobileSidebar/PrimaryMenu` | The developer navbar's external buttons, in the mobile drawer (0.5.0) |
 | `Navbar/SiteActions` | An empty slot in the public navbar for a site's own controls (0.5.0) |
 | `Navbar/MobileSidebar/SecondaryMenu` | A clean secondary-menu render |
@@ -93,7 +93,8 @@ Served from the package once `staticDir` is in your `staticDirectories`, so no s
 | `ColorModeToggle` | Sun and moon SVG icons in place of the default toggle |
 | `DocBreadcrumbs` | Full-path breadcrumbs instead of the truncated default |
 | `Tabs` | A workaround for a Docusaurus 3.10 crash |
-| `MDXComponents` | Every markdown `table` renders inside a horizontal scroll region (0.4.9) |
+| `MDXComponents` | Every markdown `table` renders inside a scroll region (0.4.9); tables fill the column and wrap, and scroll only below their cells' minimum width |
+| `Mermaid` | Every diagram in the Vantage palette and type, at its natural size in a framed scroll region, rendered once the web fonts load so no label is cut off. Takes effect only with the Vantage theme listed after `@docusaurus/theme-mermaid` in `themes` |
 
 ### Utilities
 | Export | Description |

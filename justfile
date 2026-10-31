@@ -87,8 +87,9 @@ release version:
         exit 1
     fi
     echo "📦 Bumping to v{{version}}..."
-    yarn version --new-version "{{version}}" --no-git-tag-version
-    git add package.json yarn.lock
+    # Yarn 4: `--immediate` writes the version now instead of staging a deferred bump.
+    yarn version "{{version}}" --immediate
+    git add package.json
     git commit -m "release: v{{version}}"
     git tag "v{{version}}"
     git push && git push origin "v{{version}}"

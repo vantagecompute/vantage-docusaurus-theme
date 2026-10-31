@@ -13,3 +13,13 @@ updates:
     groups:
       docs-deps:
         patterns: ["*"]
+  - package-ecosystem: npm
+    directory: /
+    commit-message:
+      prefix: chore
+      include: scope
+    schedule:
+      interval: weekly
+    groups:
+      package-deps:
+        patterns: ["*"]

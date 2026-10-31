@@ -10,3 +10,8 @@ node_modules/
 .DS_Store
 *.log
 npm-debug.log*
+
+# Yarn 4 (the binary comes from corepack, so nothing under .yarn is committed)
+.yarn/*
+!.yarn/patches
+.pnp.*

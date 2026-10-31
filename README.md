@@ -5,7 +5,7 @@ Shared Docusaurus theme for all Vantage Compute documentation sites. Provides th
 ## Installation
 
 ```bash
-npm install @vantagecompute/docusaurus-theme
+yarn add @vantagecompute/docusaurus-theme
 ```
 
 ## Usage
@@ -204,8 +204,8 @@ just docs-pin 0.5.0     # move the range across a minor
 ## Development
 
 ```bash
-npm install
-npm run build    # Compile TypeScript entry point
+yarn install
+yarn build    # Compile TypeScript entry point
 ```
 
 The package uses TypeScript for the plugin entry point (`src/index.cts` -> `lib/index.cjs`). Theme components, CSS, and static assets are shipped as source and resolved by Docusaurus at build time.
@@ -218,7 +218,7 @@ The package uses TypeScript for the plugin entry point (`src/index.cts` -> `lib/
 just release 0.4.8
 ```
 
-Bumps `package.json`, commits, tags, pushes, and creates the GitHub release. The npm publish runs in CI on `release: published`, with provenance attestation. A patch release needs nothing else; a new minor needs `just docs-pin` for the docs site.
+Bumps `package.json`, commits, tags, pushes, and creates the GitHub release. Publishing to npm runs in CI on `release: published`, with provenance attestation. A patch release needs nothing else; a new minor needs `just docs-pin` for the docs site.
 
 ## License
 

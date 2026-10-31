@@ -23,7 +23,7 @@ Babel or webpack configuration to keep aligned with theirs.
 ## Local development
 
 ```bash
-just install     # npm install
+just install     # yarn install
 just build       # tsc -> lib/
 just clean       # rm -rf lib
 ```

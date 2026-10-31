@@ -19,7 +19,7 @@ Four migrations live here:
 ## Step 1: Install the package
 
 ```bash
-npm install @vantagecompute/docusaurus-theme
+yarn add @vantagecompute/docusaurus-theme
 ```
 
 ## Step 2: Update `docusaurus.config.js`
@@ -132,8 +132,8 @@ src/rehypeTabsTransform.js  ← delete (now imported from the package)
 ## Step 7: Verify
 
 ```bash
-npm run build
-npm run serve
+yarn build
+yarn serve
 ```
 
 Check that:
@@ -156,7 +156,7 @@ blocks. After this, the mark and its wiring come from the package.
 ### Step 1: Upgrade the package
 
 ```bash
-npm install @vantagecompute/docusaurus-theme@0.4.7
+yarn add @vantagecompute/docusaurus-theme@0.4.7
 ```
 
 ### Step 2: Delete your copy of the brand mark
@@ -248,8 +248,8 @@ Spread rather than mutate: the exported objects are shared by every importer.
 ### Step 6: Verify
 
 ```bash
-npm run build
-npm run serve
+yarn build
+yarn serve
 ```
 
 - [ ] The colour mark renders in the navbar and in the footer
@@ -270,7 +270,7 @@ now has two copies of the fix, and one of them is wrong.
 ### Step 1: Upgrade the package
 
 ```bash
-npm install @vantagecompute/docusaurus-theme@^0.4.9
+yarn add @vantagecompute/docusaurus-theme@^0.4.9
 ```
 
 ### Step 2: Delete your own table wrapper
@@ -309,8 +309,8 @@ read, change it to `--ink-500`. The token page explains the numbers.
 ### Step 5: Verify
 
 ```bash
-npm run build
-npm run serve
+yarn build
+yarn serve
 ```
 
 At 375, 768 and 1024 wide:
@@ -331,7 +331,7 @@ breaking change behind the minor bump.
 ### Step 1: Upgrade the package
 
 ```bash
-npm install @vantagecompute/docusaurus-theme@^0.5.0
+yarn add @vantagecompute/docusaurus-theme@^0.5.0
 ```
 
 ### Step 2: Move your external buttons to the theme option
@@ -383,7 +383,7 @@ silently wins over the theme's.
 ### Step 5: Verify
 
 ```bash
-npm run build
+yarn build
 ```
 
 Then open the site: the brand mark links to `/developer/` (or the docs root

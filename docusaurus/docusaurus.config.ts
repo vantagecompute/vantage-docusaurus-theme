@@ -10,7 +10,7 @@ import {staticDir, getProjectVersion, vantagePrism} from '@vantagecompute/docusa
 // actually get is the only way this site stays honest.
 //
 // The range is `^0.4.7`, and a 0.5.0 needs a deliberate bump. The workflows
-// install exactly what the lockfile pins (`npm ci`), so a new 0.4.x reaches
+// install exactly what the lockfile pins (`yarn install --immutable`), so a new 0.4.x reaches
 // this site through Dependabot's lockfile PR, never silently on a deploy.
 //
 // From the theme rather than hand-rolled here, so every Vantage site advertises

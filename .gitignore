@@ -5,3 +5,8 @@ lib/
 # Docs site
 docusaurus/.docusaurus/
 docusaurus/build/
+
+# Yarn 4 (the binary comes from corepack, so nothing under .yarn is committed)
+.yarn/*
+!.yarn/patches
+.pnp.*

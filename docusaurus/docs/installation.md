@@ -6,7 +6,7 @@ sidebar_position: 2
 # Installation
 
 ```bash
-npm install @vantagecompute/docusaurus-theme
+yarn add @vantagecompute/docusaurus-theme
 ```
 
 Or with yarn:
@@ -47,21 +47,22 @@ Below 1.0.0 npm reads a caret as "this minor only", so `^0.4.7` means
 arrive on their own. A 0.5.0 does not, so a release that changes the design
 deliberately stays a deliberate adoption in each site.
 
-:::caution `npm ci` will not move this on its own
-`npm ci` installs exactly what the lockfile says, by design, so a site whose CI
-uses it stays on whatever version the lockfile was last regenerated against
-however wide the range is. That is what you want for a site that gets
-published: its build should use only versions a reviewed commit pinned.
+:::caution `yarn install --immutable` will not move this on its own
+`yarn install --immutable` installs exactly what the lockfile says, by design,
+so a site whose CI uses it stays on whatever version the lockfile was last
+regenerated against however wide the range is. That is what you want for a
+site that gets published: its build should use only versions a reviewed commit
+pinned.
 
 Take new theme releases as lockfile changes instead. Locally:
 
 ```bash
-npm update @vantagecompute/docusaurus-theme   # rewrites package-lock.json
+yarn up @vantagecompute/docusaurus-theme   # rewrites yarn.lock
 ```
 
 or let Dependabot open them, with an `npm` entry for the site's directory in
-`.github/dependabot.yml`. Do not run `npm update --no-save` in a deploy
-workflow: it builds the published site from a version no commit reviewed.
+`.github/dependabot.yml`. Do not refresh the theme inside a deploy workflow:
+that builds the published site from a version no commit reviewed.
 :::
 
 ## What lands in `node_modules`

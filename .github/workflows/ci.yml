@@ -1,8 +1,8 @@
 # Build both halves of the repository on every pull request and on main.
 #
 # The two jobs are separate because they install differently and fail for
-# different reasons: the package builds under yarn from the root lockfile, the
-# documentation site builds under npm from its own. Splitting them means a
+# different reasons: the package builds from the root lockfile, the
+# documentation site from its own (both Yarn 4). Splitting them means a
 # broken docs build never hides a broken package build.
 
 name: ci
@@ -34,15 +34,13 @@ jobs:
 
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 24
-          cache: ${{ runner.environment == 'github-hosted' && 'yarn' || '' }}
-          cache-dependency-path: yarn.lock
-          package-manager-cache: ${{ runner.environment == 'github-hosted' }}
+          node-version: 26
+          package-manager-cache: false
 
-      - name: Enable corepack
-        run: corepack enable
+      - name: Set up Yarn (pinned by packageManager, checksum-verified)
+        uses: ./.github/actions/setup-yarn
 
-      - run: yarn install --frozen-lockfile
+      - run: yarn install --immutable
 
       - run: yarn build
 
@@ -58,7 +56,7 @@ jobs:
       - name: Verify the tarball ships its assets
         run: |
           set -euo pipefail
-          contents=$(npm pack --dry-run --json | tr -d ' ')
+          contents=$(yarn pack --dry-run --json | tr -d ' ')
           missing=0
           for asset in \
             lib/index.cjs \
@@ -98,23 +96,24 @@ jobs:
 
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 24
-          cache: ${{ runner.environment == 'github-hosted' && 'npm' || '' }}
-          cache-dependency-path: docusaurus/package-lock.json
-          package-manager-cache: ${{ runner.environment == 'github-hosted' }}
+          node-version: 26
+          package-manager-cache: false
+
+      - name: Set up Yarn (pinned by packageManager, checksum-verified)
+        uses: ./.github/actions/setup-yarn
 
       - name: Install docs dependencies
         working-directory: docusaurus
-        run: npm ci
+        run: yarn install --immutable
 
       # Lockfile-exact, the same versions deploy-docs.yml publishes. A theme
       # release that breaks the build fails on its Dependabot lockfile PR.
       - name: Typecheck
         working-directory: docusaurus
-        run: npm run typecheck
+        run: yarn typecheck
 
       # `onBrokenLinks: 'throw'` means this also checks every internal link on
       # the site.
       - name: Build docs
         working-directory: docusaurus
-        run: npm run build
+        run: yarn build

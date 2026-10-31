@@ -12,13 +12,13 @@ default:
 [group("dev")]
 install:
     @echo "📦 Installing dependencies..."
-    npm install
+    yarn install
 
 # Build TypeScript entry point
 [group("dev")]
 build: install
     @echo "🏗️ Building TypeScript..."
-    npm run build
+    yarn build
 
 # Clean build artifacts
 [group("dev")]
@@ -30,33 +30,32 @@ clean:
 # Documentation site (docusaurus/)
 #
 # Published as a spoke under docs.vantagecompute.ai/developer/docusaurus-theme/.
-# It installs @vantagecompute/docusaurus-theme from npm rather than through a
+# It installs @vantagecompute/docusaurus-theme from the npm registry rather than through a
 # file: link to this working tree. That is deliberate: the site then renders
 # what consumers actually get, and a release that ships a tarball missing
 # something the build needs fails here first.
 #
-# The declared range is ^0.4.7, so patch releases arrive on the next deploy with
-# no commit. `docs-pin` is for crossing a minor, which stays deliberate. Note
-# that `npm ci` is lockfile-exact, so both workflows run
-# `npm update --no-save @vantagecompute/docusaurus-theme` after installing.
+# The declared range is ^0.4.7. The workflows install exactly what the lockfile
+# pins, so patch releases arrive as Dependabot lockfile PRs. `docs-pin` is for
+# crossing a minor, which stays deliberate.
 # ---------------------------------------------------------------------------
 
 # Install the docs site's dependencies
 [group("docs")]
 docs-install:
     @echo "📦 Installing docs dependencies..."
-    cd docusaurus && npm install
+    cd docusaurus && yarn install
 
 # Serve the docs site locally at /developer/docusaurus-theme/
 [group("docs")]
 docs-serve: docs-install
-    cd docusaurus && npm run start
+    cd docusaurus && yarn start
 
 # Build the docs site (also link-checks it: onBrokenLinks is 'throw')
 [group("docs")]
 docs-build: docs-install
     @echo "🏗️ Building docs site..."
-    cd docusaurus && npm run typecheck && npm run build
+    cd docusaurus && yarn typecheck && yarn build
 
 # Remove the docs site's build output
 [group("docs")]
@@ -69,15 +68,14 @@ docs-clean:
 docs-pin version:
     #!/usr/bin/env bash
     set -euo pipefail
-    if ! npm view "@vantagecompute/docusaurus-theme@{{version}}" version >/dev/null 2>&1; then
+    if ! yarn npm info "@vantagecompute/docusaurus-theme@{{version}}" --fields version >/dev/null 2>&1; then
         echo "❌ @vantagecompute/docusaurus-theme@{{version}} is not on npm yet."
         echo "   Release it first: just release {{version}}"
         exit 1
     fi
     cd docusaurus
-    npm pkg set 'dependencies.@vantagecompute/docusaurus-theme=^{{version}}'
-    npm install
-    echo "✅ Docs site now tracks ^{{version}}. Commit docusaurus/package.json and package-lock.json."
+    yarn add "@vantagecompute/docusaurus-theme@^{{version}}"
+    echo "✅ Docs site now tracks ^{{version}}. Commit docusaurus/package.json and yarn.lock."
 
 # Bump version, commit, tag, push, and create GitHub release to trigger npm publish
 [group("release")]
@@ -96,7 +94,7 @@ release version:
     git push && git push origin "v{{version}}"
     echo "🚀 Creating GitHub release v{{version}}..."
     gh release create "v{{version}}" --title "v{{version}}" --generate-notes
-    echo "✅ Release v{{version}} created. npm publish will run via GitHub Actions."
+    echo "✅ Release v{{version}} created; the publish workflow pushes it to npm."
 
 # Show available commands
 [group("dev")]

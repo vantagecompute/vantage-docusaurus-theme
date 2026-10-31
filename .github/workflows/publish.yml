@@ -10,45 +10,35 @@ permissions:
 
 jobs:
   publish:
-    # Stays on a GitHub-hosted runner: npm publish --provenance refuses to run
-    # anywhere else, since only a GitHub-hosted runner can attest the build.
+    # Stays on a GitHub-hosted runner: provenance can only be attested from
+    # one.
     runs-on: ubuntu-latest
 
-    # npm trusted publishing: npm exchanges this job's GitHub OIDC token
-    # (id-token: write, above) for a short-lived publish credential, against the
-    # trusted publisher configured for this repository and this workflow file on
-    # npmjs.com. No long-lived NPM_TOKEN to expire: 0.5.5's publish failed with
-    # E404 on PUT because the token had.
+    # npm trusted publishing: `yarn npm publish` exchanges this job's GitHub
+    # OIDC token (id-token: write, above) for a short-lived publish credential,
+    # against the trusted publisher configured for this repository and this
+    # workflow file on npmjs.com. No long-lived NPM_TOKEN to expire: 0.5.5's
+    # publish failed with E404 on PUT because the token had. Yarn 4 does the
+    # exchange itself, so there is no npm CLI to install or pin.
     #
     # There is deliberately no `registry-url` on setup-node. It writes an .npmrc
-    # holding the literal `${NODE_AUTH_TOKEN}`, and yarn 1 (`cache: yarn`)
-    # expands env vars in .npmrc eagerly and dies on an unset one:
-    #
-    #   error Failed to replace env in config: ${NODE_AUTH_TOKEN}
-    #
-    # npm publishes to registry.npmjs.org by default, so the .npmrc buys nothing.
+    # holding the literal `${NODE_AUTH_TOKEN}`, which nothing here needs: Yarn
+    # publishes to registry.npmjs.org by default.
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 24
-          cache: ${{ runner.environment == 'github-hosted' && 'yarn' || '' }}
-          cache-dependency-path: yarn.lock
-          package-manager-cache: ${{ runner.environment == 'github-hosted' }}
+          node-version: 26
+          package-manager-cache: false
 
-      - name: Enable corepack
-        run: corepack enable
+      - name: Set up Yarn (pinned by packageManager, checksum-verified)
+        uses: ./.github/actions/setup-yarn
 
-      - run: yarn install --frozen-lockfile
+      - run: yarn install --immutable
 
       - run: yarn build
 
-      # Trusted publishing needs npm 11.5.1 or later; pin the CLI rather than
-      # depend on whichever npm the runner's Node 24 happens to bundle.
-      - run: npm install -g npm@11.21.1
-
-      # Publish stays on the npm CLI: yarn 1 cannot emit provenance attestations.
-      # With trusted publishing npm attests provenance on its own; the flag stays
-      # explicit.
-      - run: npm publish --provenance --access public
+      # `prepack` builds again; harmless, and it keeps a local `yarn npm publish`
+      # from shipping a stale lib/.
+      - run: yarn npm publish --provenance --access public

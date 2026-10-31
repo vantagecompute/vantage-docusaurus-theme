@@ -23,7 +23,7 @@ Babel or webpack configuration to keep aligned with theirs.
 ## Local development
 
 ```bash
-just install     # npm install
+just install     # yarn install
 just build       # tsc -> lib/
 just clean       # rm -rf lib
 ```
@@ -56,10 +56,10 @@ repository around it. That is what makes the site an honest preview: it renders
 what consumers actually get, and it fails if a release ever ships a tarball
 missing something the build needs.
 
-The declared range is `^0.4.7`, so a new 0.4.x patch reaches the site on the
-next deploy with no commit here. Both workflows run
-`npm update --no-save @vantagecompute/docusaurus-theme` after `npm ci`, because
-`npm ci` is lockfile-exact and the range on its own would never move.
+The declared range is `^0.4.7`, and the workflows install exactly what the
+lockfile pins. A new 0.4.x patch reaches the site through the Dependabot
+lockfile PR for `/docusaurus`, so the published site is always a reviewed set
+of versions.
 
 Moving to a new minor is deliberate:
 

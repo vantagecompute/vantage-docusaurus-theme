@@ -22,7 +22,7 @@ Three migrations, depending on where a site starts.
 ### Step 1: install
 
 ```bash
-npm install @vantagecompute/docusaurus-theme
+yarn add @vantagecompute/docusaurus-theme
 ```
 
 ### Step 2: update `docusaurus.config.js`
@@ -134,8 +134,8 @@ src/rehypeTabsTransform.js   <- delete, now imported from the package
 ### Step 7: verify
 
 ```bash
-npm run build
-npm run serve
+yarn build
+yarn serve
 ```
 
 - Fonts load (Satoshi, JetBrains Mono)
@@ -157,7 +157,7 @@ blocks. Afterwards the mark and its wiring both come from the package.
 ### Step 1: upgrade
 
 ```bash
-npm install @vantagecompute/docusaurus-theme@0.4.7
+yarn add @vantagecompute/docusaurus-theme@0.4.7
 ```
 
 ### Step 2: delete your copy of the mark
@@ -242,8 +242,8 @@ Omit `logo` to render none.
 ### Step 6: verify
 
 ```bash
-npm run build
-npm run serve
+yarn build
+yarn serve
 ```
 
 - The colour mark renders in the navbar and in the footer
@@ -262,7 +262,7 @@ breaking change behind the minor bump.
 ### Step 1: upgrade
 
 ```bash
-npm install @vantagecompute/docusaurus-theme@^0.5.0
+yarn add @vantagecompute/docusaurus-theme@^0.5.0
 ```
 
 ### Step 2: move your external buttons to the theme option
@@ -314,7 +314,7 @@ silently wins over the theme's.
 ### Step 5: verify
 
 ```bash
-npm run build
+yarn build
 ```
 
 Then open the site: the brand mark links to `/developer/` (or the docs root

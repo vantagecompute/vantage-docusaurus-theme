@@ -35,10 +35,9 @@ clean:
 # what consumers actually get, and a release that ships a tarball missing
 # something the build needs fails here first.
 #
-# The declared range is ^0.4.7, so patch releases arrive on the next deploy with
-# no commit. `docs-pin` is for crossing a minor, which stays deliberate. Note
-# that `npm ci` is lockfile-exact, so both workflows run
-# `npm update --no-save @vantagecompute/docusaurus-theme` after installing.
+# The declared range is ^0.4.7. The workflows install exactly what the lockfile
+# pins, so patch releases arrive as Dependabot lockfile PRs. `docs-pin` is for
+# crossing a minor, which stays deliberate.
 # ---------------------------------------------------------------------------
 
 # Install the docs site's dependencies

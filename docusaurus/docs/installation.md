@@ -50,17 +50,18 @@ deliberately stays a deliberate adoption in each site.
 :::caution `npm ci` will not move this on its own
 `npm ci` installs exactly what the lockfile says, by design, so a site whose CI
 uses it stays on whatever version the lockfile was last regenerated against
-however wide the range is. Either regenerate the lockfile when you want the
-newer theme, or refresh just this package after installing:
+however wide the range is. That is what you want for a site that gets
+published: its build should use only versions a reviewed commit pinned.
+
+Take new theme releases as lockfile changes instead. Locally:
 
 ```bash
-npm ci
-npm update --no-save @vantagecompute/docusaurus-theme
+npm update @vantagecompute/docusaurus-theme   # rewrites package-lock.json
 ```
 
-`--no-save` leaves the lockfile and `package.json` alone, so every other
-dependency stays reproducible and the build produces no diff. That is what this
-package's own documentation site does.
+or let Dependabot open them, with an `npm` entry for the site's directory in
+`.github/dependabot.yml`. Do not run `npm update --no-save` in a deploy
+workflow: it builds the published site from a version no commit reviewed.
 :::
 
 ## What lands in `node_modules`

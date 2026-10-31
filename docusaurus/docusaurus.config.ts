@@ -9,11 +9,9 @@ import {staticDir, getProjectVersion, vantagePrism} from '@vantagecompute/docusa
 // `files` in package.json does not ship. Building against the tarball readers
 // actually get is the only way this site stays honest.
 //
-// The range is `^0.4.7`, so the site follows the newest 0.4.x automatically and
-// a 0.5.0 needs a deliberate bump. Note that `npm ci` is lockfile-exact, so the
-// range on its own would not move: both workflows run
-// `npm update --no-save @vantagecompute/docusaurus-theme` after installing to
-// take the newest release in range without writing a lockfile diff.
+// The range is `^0.4.7`, and a 0.5.0 needs a deliberate bump. The workflows
+// install exactly what the lockfile pins (`npm ci`), so a new 0.4.x reaches
+// this site through Dependabot's lockfile PR, never silently on a deploy.
 //
 // From the theme rather than hand-rolled here, so every Vantage site advertises
 // its version the same way. It returns `git describe --tags --always`, so the

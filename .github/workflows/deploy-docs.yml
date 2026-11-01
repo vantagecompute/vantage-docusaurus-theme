@@ -55,6 +55,10 @@ concurrency:
 # the actions cache only on GitHub-hosted runners.
 jobs:
   deploy:
+    # Docs publish only from a release tag. workflow_dispatch can be started
+    # from any branch, and this job assumes the spoke role and syncs the live
+    # site with --delete, so a branch must never reach it.
+    if: github.ref_type == 'tag'
     runs-on: ${{ vars.USE_SELF_HOSTED_RUNNERS == 'true' && fromJSON(vars.SELF_HOSTED_RUNS_ON || '{"group":"vantage-eng","labels":["X64"]}') || 'ubuntu-26.04' }}
     steps:
       # fetch-depth: 0 rather than the default 1. The site's version badge comes
